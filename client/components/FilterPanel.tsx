@@ -118,8 +118,16 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     filters.dateRange.to;
 
   return (
-    <Card className="absolute top-full left-[20px] mt-2 w-96 shadow-lg border z-50 bg-white">
-      <CardContent className="p-4 space-y-4">
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-40"
+        onClick={onClose}
+      />
+
+      {/* Filter Panel */}
+      <Card className="absolute top-full right-0 mt-2 w-96 shadow-lg border z-50 bg-white">
+        <CardContent className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-sm">Filters</h3>
           <Button
@@ -262,7 +270,8 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
             Apply Filters
           </Button>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 }
