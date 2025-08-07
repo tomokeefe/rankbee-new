@@ -43,44 +43,10 @@ export function Summary() {
 
   const generateAISummary = async () => {
     setLoading(true);
-    setIsUsingFallback(false);
+    setIsUsingFallback(true); // Default to fallback to avoid API calls
+
     try {
-      const metrics = getMockMetrics(filters.brand, filters.timeframe);
-
-      // Try to use AI analysis first
-      try {
-        const aiInsights = await analyzeDashboardData(metrics, filters.brand);
-        if (aiInsights && aiInsights.length > 0) {
-          setAiInsights(aiInsights.slice(0, 4).map(insight => ({
-            type: insight.type as 'ranking' | 'performance' | 'opportunity' | 'alert',
-            icon: insight.type === 'ranking' ? Target :
-                  insight.type === 'opportunity' ? Users :
-                  insight.type === 'alert' ? AlertTriangle : TrendingUp,
-            iconColor: insight.type === 'ranking' ? 'text-purple-600' :
-                      insight.type === 'opportunity' ? 'text-blue-600' :
-                      insight.type === 'alert' ? 'text-amber-600' : 'text-green-600',
-            text: insight.description,
-            metric: insight.title,
-            change: Math.round((Math.random() - 0.5) * 40), // Random change for demo
-            confidence: insight.confidence
-          })));
-          return;
-        }
-      } catch (aiError) {
-        console.warn("AI analysis failed, using fallback insights:", aiError);
-        setIsUsingFallback(true);
-
-        // Show user-friendly notification for quota errors
-        if (aiError instanceof Error && aiError.message.includes('429')) {
-          toast({
-            title: "AI Analysis Unavailable",
-            description: "Using sample insights due to API quota limits. Data shown is for demonstration purposes.",
-            variant: "default",
-          });
-        }
-      }
-
-      // Fallback to sample insights
+      // Use sample insights directly to avoid API quota issues
       const insights: AISummaryInsight[] = [
         {
           type: 'ranking',
@@ -121,6 +87,14 @@ export function Summary() {
       ];
 
       setAiInsights(insights);
+
+      // Show user-friendly notification about using sample data
+      toast({
+        title: "Sample Insights Displayed",
+        description: "Using demonstration data to showcase insights functionality.",
+        variant: "default",
+      });
+
     } catch (error) {
       console.error("Error generating AI summary:", error);
     } finally {
