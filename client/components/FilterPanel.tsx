@@ -271,21 +271,65 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
               )}
             </div>
 
-            {/* Subcategory Filter */}
+            {/* Subcategory Filter - Multi-select */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#384255]">Subcategory</label>
-              <Select value={filters.subcategory || "All Subcategories"} onValueChange={handleSubcategoryChange}>
-                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select subcategory" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategoryOptions.map((subcategory) => (
-                    <SelectItem key={subcategory} value={subcategory} className="py-2">
+              <label className="text-sm font-semibold text-[#384255]">Subcategory (Multi-select)</label>
+              <Popover open={subcategoryPopoverOpen} onOpenChange={setSubcategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 text-left"
+                  >
+                    <span className="truncate">
+                      {selectedSubcategories.length === 0
+                        ? "Select subcategories"
+                        : selectedSubcategories.length === 1
+                        ? selectedSubcategories[0]
+                        : `${selectedSubcategories.length} subcategories selected`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[360px] p-0" align="start">
+                  <div className="max-h-64 overflow-y-auto">
+                    {subcategoryOptions.map((subcategory) => (
+                      <div
+                        key={subcategory}
+                        className="flex items-center space-x-2 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSubcategoryToggle(subcategory)}
+                      >
+                        <Checkbox
+                          checked={subcategory === "All Subcategories" ? selectedSubcategories.length === 0 : selectedSubcategories.includes(subcategory)}
+                          className="data-[state=checked]:bg-[#9369F6] data-[state=checked]:border-[#9369F6]"
+                        />
+                        <label className="text-sm font-medium cursor-pointer flex-1">
+                          {subcategory}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedSubcategories.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedSubcategories.map((subcategory) => (
+                    <Badge
+                      key={subcategory}
+                      variant="secondary"
+                      className="text-xs bg-[#9369F6]/10 text-[#9369F6] border-[#9369F6]/20"
+                    >
                       {subcategory}
-                    </SelectItem>
+                      <X
+                        className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSubcategoryToggle(subcategory);
+                        }}
+                      />
+                    </Badge>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
             </div>
 
             {/* Attributes Filter */}
