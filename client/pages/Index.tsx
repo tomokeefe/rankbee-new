@@ -17,9 +17,6 @@ export default function Index() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        {/* Debug Component - temporary */}
-        <DebugFilter />
-
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
