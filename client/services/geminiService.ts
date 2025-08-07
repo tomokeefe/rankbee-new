@@ -99,6 +99,175 @@ Focus on understanding what the user is looking for and how it relates to brand 
   }
 }
 
+export interface DashboardInsight {
+  id: string;
+  type: 'trend' | 'anomaly' | 'opportunity' | 'alert';
+  title: string;
+  description: string;
+  significance: 'high' | 'medium' | 'low';
+  actionable: boolean;
+  suggestedActions: string[];
+  confidence: number;
+  timestamp: Date;
+  dataContext: any;
+}
+
+export interface ChatQuery {
+  id: string;
+  query: string;
+  response: string;
+  timestamp: Date;
+  confidence: number;
+  suggestedFollowUp: string[];
+}
+
+export async function analyzeDashboardData(data: any, brandName: string): Promise<DashboardInsight[]> {
+  try {
+    const analysisPrompt = `
+Analyze this brand dashboard data for ${brandName} and provide actionable insights:
+
+Data: ${JSON.stringify(data, null, 2)}
+
+Please provide insights as a JSON array of objects with this structure:
+[
+  {
+    "type": "trend|anomaly|opportunity|alert",
+    "title": "Brief insight title",
+    "description": "Detailed explanation of the insight",
+    "significance": "high|medium|low",
+    "actionable": true/false,
+    "suggestedActions": ["Action 1", "Action 2"],
+    "confidence": 0.0-1.0
+  }
+]
+
+Focus on:
+- Performance trends and patterns
+- Unusual changes or anomalies
+- Growth opportunities
+- Actionable recommendations
+- Competitive positioning insights
+
+Limit to 5-8 most significant insights.
+`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: analysisPrompt,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    const aiResponse = responseData.candidates[0].content.parts[0].text;
+
+    const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error("Invalid JSON response from AI");
+    }
+
+    const insights = JSON.parse(jsonMatch[0]);
+
+    return insights.map((insight: any) => ({
+      id: generateId(),
+      type: insight.type,
+      title: insight.title,
+      description: insight.description,
+      significance: insight.significance,
+      actionable: insight.actionable,
+      suggestedActions: insight.suggestedActions,
+      confidence: insight.confidence,
+      timestamp: new Date(),
+      dataContext: data
+    }));
+  } catch (error) {
+    console.error("Error analyzing dashboard data:", error);
+    return generateMockInsights(brandName);
+  }
+}
+
+export async function processNaturalLanguageQuery(query: string, dashboardData: any): Promise<ChatQuery> {
+  try {
+    const queryPrompt = `
+User question about their brand dashboard data: "${query}"
+
+Dashboard context: ${JSON.stringify(dashboardData, null, 2)}
+
+Please provide a helpful response that:
+1. Directly answers the user's question using the available data
+2. Provides specific numbers/metrics when possible
+3. Explains any trends or patterns relevant to their question
+4. Suggests related insights they might find valuable
+
+Respond in this JSON format:
+{
+  "response": "Your detailed answer to the user's question",
+  "confidence": 0.0-1.0,
+  "suggestedFollowUp": ["Question 1", "Question 2", "Question 3"]
+}
+`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: queryPrompt,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    const aiResponse = responseData.candidates[0].content.parts[0].text;
+
+    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("Invalid JSON response from AI");
+    }
+
+    const parsedResponse = JSON.parse(jsonMatch[0]);
+
+    return {
+      id: generateId(),
+      query,
+      response: parsedResponse.response,
+      timestamp: new Date(),
+      confidence: parsedResponse.confidence,
+      suggestedFollowUp: parsedResponse.suggestedFollowUp
+    };
+  } catch (error) {
+    console.error("Error processing natural language query:", error);
+    return generateMockChatResponse(query);
+  }
+}
+
 export async function generatePromptSuggestions(
   brandName: string,
   category: string,
