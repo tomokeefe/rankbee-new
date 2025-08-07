@@ -271,23 +271,7 @@ export function getFilteredData(filters: FilterState) {
   }
 
   // Apply category filter
-  if (filters.category && Array.isArray(filters.category) && filters.category.length > 0) {
-    // Use the first category for multiplier (or average if multiple)
-    const categoryMultiplier = getCategoryMultiplier(filters.category[0]);
-    filteredData.kpiMetrics.brandCoverage.value = Math.round(
-      filteredData.kpiMetrics.brandCoverage.value * categoryMultiplier,
-    );
-
-    // Filter category breakdown to show any matching categories
-    filteredData.categoryBreakdown = filteredData.categoryBreakdown.filter(
-      (cat: any) =>
-        filters.category!.some((filterCat: string) =>
-          cat.category
-            .toLowerCase()
-            .includes(getCategoryName(filterCat).toLowerCase())
-        )
-    );
-  } else if (filters.category && typeof filters.category === 'string') {
+  if (filters.category && filters.category !== "All Categories") {
     const categoryMultiplier = getCategoryMultiplier(filters.category);
     filteredData.kpiMetrics.brandCoverage.value = Math.round(
       filteredData.kpiMetrics.brandCoverage.value * categoryMultiplier,
