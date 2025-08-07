@@ -39,6 +39,75 @@ export interface FilterContextType {
   resetFilters: () => void;
 }
 
+const defaultBrands: Brand[] = [
+  {
+    id: "1",
+    name: "Olive Garden",
+    url: "https://www.olivegarden.com",
+    category: "Casual Dining",
+    status: "active",
+    addedDate: "2025-01-01",
+    description: "Family-friendly Italian restaurant chain",
+    value: "olive-garden",
+    label: "Olive Garden"
+  },
+  {
+    id: "2",
+    name: "Maggiano's",
+    url: "https://www.maggianos.com",
+    category: "Fine Dining",
+    status: "active",
+    addedDate: "2025-01-05",
+    description: "Upscale Italian restaurant",
+    value: "maggianos",
+    label: "Maggiano's"
+  },
+  {
+    id: "3",
+    name: "Darden",
+    url: "https://www.darden.com",
+    category: "Restaurant Group",
+    status: "active",
+    addedDate: "2024-12-20",
+    description: "Restaurant holding company",
+    value: "darden",
+    label: "Darden"
+  },
+  {
+    id: "4",
+    name: "Osteria M.",
+    url: "https://www.osteria.com",
+    category: "Fine Dining",
+    status: "active",
+    addedDate: "2024-12-25",
+    description: "Authentic Italian dining",
+    value: "osteria",
+    label: "Osteria M."
+  },
+  {
+    id: "5",
+    name: "Bloomin' Brands",
+    url: "https://www.bloominbrands.com",
+    category: "Restaurant Group",
+    status: "active",
+    addedDate: "2024-12-10",
+    description: "Restaurant holding company",
+    value: "bloomin",
+    label: "Bloomin' Brands"
+  },
+  {
+    id: "6",
+    name: "Carrabba's",
+    url: "https://www.carrabbas.com",
+    category: "Casual Dining",
+    status: "active",
+    addedDate: "2024-12-15",
+    description: "Italian-American restaurant chain",
+    value: "carrabba",
+    label: "Carrabba's"
+  }
+];
+
 const defaultFilters: FilterState = {
   dateRange: null,
   brand: "olive-garden", // Auto-select first brand
@@ -51,8 +120,18 @@ const defaultFilters: FilterState = {
 // Create default context value
 const defaultContextValue: FilterContextType = {
   filters: defaultFilters,
+  brands: defaultBrands,
   updateFilter: () => {
     console.warn("updateFilter called outside of FilterProvider");
+  },
+  addBrand: () => {
+    console.warn("addBrand called outside of FilterProvider");
+  },
+  updateBrand: () => {
+    console.warn("updateBrand called outside of FilterProvider");
+  },
+  deleteBrand: () => {
+    console.warn("deleteBrand called outside of FilterProvider");
   },
   resetFilters: () => {
     console.warn("resetFilters called outside of FilterProvider");
