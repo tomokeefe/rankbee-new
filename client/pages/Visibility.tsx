@@ -77,46 +77,6 @@ export default function Visibility() {
           </Button>
         </div>
 
-        {/* AI Insights Panel */}
-        {aiInsights.length > 0 && (
-          <Card className="border-l-4 border-l-[#9369F6]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#9369F6]" />
-                AI-Powered Visibility Insights for {brandName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {aiInsights.slice(0, 4).map((insight, index) => (
-                  <div
-                    key={index}
-                    className="p-3 rounded-lg border border-[#9369F6]/20 bg-[#9369F6]/5"
-                  >
-                    <h4 className="font-semibold text-sm text-[#384255] mb-2">
-                      {insight.title}
-                    </h4>
-                    <p className="text-sm text-gray-700 mb-2">
-                      {insight.description}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <Badge variant="outline" className="text-xs">
-                        {Math.round(insight.confidence * 100)}% confidence
-                      </Badge>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        insight.significance === 'high' ? 'bg-red-100 text-red-800' :
-                        insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {insight.significance} priority
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -184,6 +144,76 @@ export default function Visibility() {
             </CardContent>
           </Card>
         </div>
+
+        {/* AI Insights Panel */}
+        {aiInsights.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Insights for {brandName}</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={loadAIInsights}
+                  disabled={isLoadingInsights}
+                  className="text-xs h-7 px-2"
+                >
+                  <Brain className={`h-3 w-3 mr-1 ${isLoadingInsights ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500">
+                AI-powered insights from your visibility performance data
+              </p>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {isLoadingInsights ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="p-3 rounded-lg border animate-pulse">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                        <div className="h-3 bg-gray-200 rounded w-20"></div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {aiInsights.slice(0, 4).map((insight, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-lg border transition-all duration-200 hover:shadow-sm bg-gray-50 border-gray-200"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-bold text-gray-700">
+                          {insight.title}
+                        </h4>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          insight.significance === 'high' ? 'bg-red-100 text-red-800' :
+                          insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {insight.significance} priority
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-800 leading-relaxed mb-2">
+                        {insight.description}
+                      </p>
+                      <div className="flex justify-end">
+                        <span className="text-xs text-gray-500">
+                          {Math.round(insight.confidence * 100)}% confidence
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Visibility Trends Chart */}
         <Card>
