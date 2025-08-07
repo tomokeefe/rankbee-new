@@ -124,8 +124,10 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     setSelectedModel("ChatGPT");
     setDateRange({ from: undefined, to: undefined });
     setSelectedAttributes([]);
-    updateFilter("category", "All Categories");
-    updateFilter("subcategory", "All Subcategories");
+    setSelectedCategories([]);
+    setSelectedSubcategories([]);
+    updateFilter("category", []);
+    updateFilter("subcategory", []);
     updateFilter("dateRange", null);
     updateFilter("attributes", []);
   };
