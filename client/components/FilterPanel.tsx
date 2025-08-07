@@ -52,6 +52,15 @@ const attributeOptions = [
   "Live Music",
 ];
 
+const modelOptions = [
+  "ChatGPT",
+  "Gemini",
+  "Grok",
+  "Claude",
+  "Apple",
+  "Llama",
+];
+
 export function FilterPanel({ onClose }: FilterPanelProps) {
   const { filters, updateFilter } = useFilters();
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
