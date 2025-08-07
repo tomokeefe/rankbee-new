@@ -20,8 +20,8 @@ export interface Brand {
 export interface FilterState {
   dateRange?: DateRange | null;
   brand: string;
-  category?: string[];
-  subcategory?: string[];
+  category?: string;
+  subcategory?: string;
   priceRange?: string;
   attributes?: string[];
 }
