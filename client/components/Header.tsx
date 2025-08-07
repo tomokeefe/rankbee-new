@@ -149,7 +149,7 @@ export function Header() {
                     setShowFilters(!showFilters);
                   }}
                 >
-                  <Filter className="w-5 h-5 text-[#71717A]" strokeWidth={1.33} />
+                  <Filter className="w-6 h-6 text-[#71717A]" strokeWidth={1.33} />
                 </Button>
 
                 {/* Filter Panel */}
