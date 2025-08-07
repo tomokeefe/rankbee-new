@@ -84,22 +84,22 @@ export function Header() {
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/1aaf17a846b7f6d27c800bb71697497d6f50202a?width=158"
               alt="RankBee Logo"
-              className="w-[79px] h-[61px]"
+              className="w-[79px] h-[61px] sm:w-[60px] sm:h-[45px]"
             />
 
-            {/* Divider */}
-            <div className="w-px h-[62px] bg-black opacity-20" />
+            {/* Divider - Hidden on mobile */}
+            <div className="w-px h-[62px] bg-black opacity-20 hidden sm:block" />
 
-            {/* Company Name */}
-            <div className="w-[132px] h-[38px]">
-              <span className="text-black font-bold text-[22px] leading-[38px] font-sans">
+            {/* Company Name - Hidden on small mobile */}
+            <div className="w-[132px] h-[38px] hidden sm:block">
+              <span className="text-black font-bold text-[22px] sm:text-[18px] leading-[38px] font-sans">
                 GrowCreate
               </span>
             </div>
           </div>
 
-          {/* Center - Brand Selector */}
-          <div className="flex-1 flex justify-center">
+          {/* Center - Brand Selector (Hidden on mobile) */}
+          <div className="flex-1 justify-center hidden lg:flex">
             <div className="flex items-center gap-[13px]">
               <span className="text-[#18181B] font-bold text-[17px] leading-5 opacity-60 font-sans">
                 Brand:
@@ -107,15 +107,15 @@ export function Header() {
 
               {/* Brand Dropdown */}
               <Select value={filters.brand} onValueChange={handleBrandChange}>
-                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-md transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px]">
+                <SelectTrigger className="w-[311px] xl:w-[311px] lg:w-[250px] h-[51px] px-[33px] lg:px-[20px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] lg:text-[18px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-md transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
+                  <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px] lg:text-[18px]">
                     {displayName}
                   </SelectValue>
-                  <svg className="absolute right-[33px] h-4 w-4 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="10" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="absolute right-[33px] lg:right-[20px] h-4 w-4 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="10" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path opacity="0.6" d="M5.05078 5.51282L0 0.487305H10.1016L5.05078 5.51282Z" fill="black"/>
                   </svg>
                 </SelectTrigger>
-                <SelectContent className="min-w-[311px]">
+                <SelectContent className="min-w-[311px] lg:min-w-[250px]">
                   {activeBrands.map((brand) => {
                     const isSelected = filters.brand === brand.value;
                     return (
@@ -163,8 +163,20 @@ export function Header() {
             </div>
           </div>
 
-          {/* Right side actions */}
-          <div className="flex items-center gap-[10px] flex-shrink-0">
+          {/* Mobile Hamburger Menu - Visible on tablet and mobile */}
+          <div className="flex-1 flex justify-end lg:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(true)}
+              className="h-10 w-10 hover:bg-gray-100"
+            >
+              <Menu className="h-6 w-6 text-gray-700" />
+            </Button>
+          </div>
+
+          {/* Right side actions (Hidden on mobile) */}
+          <div className="items-center gap-[10px] flex-shrink-0 hidden lg:flex">
             {/* Support Button */}
             <Dialog open={supportOpen} onOpenChange={setSupportOpen}>
               <DialogTrigger asChild>
