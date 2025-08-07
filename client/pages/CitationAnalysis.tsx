@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
 import { getBrandCitationData, getBrandCitationTrends, generateCitationInsights, getBrandDisplayName } from "../services/citationService";
+import { useToast } from "../hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -77,6 +78,8 @@ export default function CitationAnalysis() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [aiInsights, setAiInsights] = useState<any[]>([]);
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const { toast } = useToast();
 
   // Get brand-specific citation data
   const citationData = getBrandCitationData(filters.brand);
@@ -89,11 +92,22 @@ export default function CitationAnalysis() {
 
   const loadAIInsights = async () => {
     setIsLoadingInsights(true);
+    setIsUsingFallback(false);
     try {
       const insights = await generateCitationInsights(filters.brand);
       setAiInsights(insights);
     } catch (error) {
       console.error("Error loading AI insights:", error);
+      setIsUsingFallback(true);
+
+      // Show user-friendly notification for quota errors
+      if (error instanceof Error && error.message.includes('429')) {
+        toast({
+          title: "AI Analysis Unavailable",
+          description: "Using sample insights due to API quota limits. Data shown is for demonstration purposes.",
+          variant: "default",
+        });
+      }
     } finally {
       setIsLoadingInsights(false);
     }
@@ -280,7 +294,10 @@ export default function CitationAnalysis() {
                 </Button>
               </div>
               <p className="text-xs text-gray-500">
-                AI-powered insights from your citation performance data
+                {isUsingFallback
+                  ? "Sample insights shown (AI analysis quota exceeded)"
+                  : "AI-powered insights from your citation performance data"
+                }
               </p>
             </CardHeader>
             <CardContent className="pt-0">
