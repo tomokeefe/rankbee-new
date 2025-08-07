@@ -16,6 +16,143 @@ const baseData = {
     { date: "2025-08-03", coverage: 49, prompts: 131, position: 1.59 },
   ],
 
+  // Global brand rankings with comprehensive data
+  globalBrands: [
+    {
+      rank: 1,
+      name: "McDonald's",
+      coverage: 89.2,
+      avgPosition: 1.15,
+      logo: "🍟",
+      category: "Fast Food",
+      mentions: 12543,
+      change: 2.1,
+      region: "Global"
+    },
+    {
+      rank: 2,
+      name: "Starbucks",
+      coverage: 84.7,
+      avgPosition: 1.28,
+      logo: "☕",
+      category: "Coffee",
+      mentions: 9876,
+      change: 1.8,
+      region: "Global"
+    },
+    {
+      rank: 3,
+      name: "KFC",
+      coverage: 78.3,
+      avgPosition: 1.42,
+      logo: "🍗",
+      category: "Fast Food",
+      mentions: 8234,
+      change: -0.3,
+      region: "Global"
+    },
+    {
+      rank: 4,
+      name: "Pizza Hut",
+      coverage: 72.1,
+      avgPosition: 1.51,
+      logo: "🍕",
+      category: "Pizza",
+      mentions: 7891,
+      change: 0.7,
+      region: "Global"
+    },
+    {
+      rank: 5,
+      name: "Subway",
+      coverage: 69.8,
+      avgPosition: 1.58,
+      logo: "🥪",
+      category: "Fast Casual",
+      mentions: 7234,
+      change: -1.2,
+      region: "Global"
+    },
+    {
+      rank: 6,
+      name: "Olive Garden",
+      coverage: 65.4,
+      avgPosition: 1.59,
+      logo: "🫒",
+      category: "Casual Dining",
+      mentions: 6789,
+      change: 3.2,
+      region: "North America",
+      isSelected: true
+    },
+    {
+      rank: 7,
+      name: "Domino's",
+      coverage: 63.2,
+      avgPosition: 1.67,
+      logo: "🍕",
+      category: "Pizza",
+      mentions: 6543,
+      change: 1.5,
+      region: "Global"
+    },
+    {
+      rank: 8,
+      name: "Burger King",
+      coverage: 61.7,
+      avgPosition: 1.73,
+      logo: "👑",
+      category: "Fast Food",
+      mentions: 6234,
+      change: -0.8,
+      region: "Global"
+    },
+    {
+      rank: 9,
+      name: "Chili's",
+      coverage: 58.9,
+      avgPosition: 1.81,
+      logo: "🌶️",
+      category: "Casual Dining",
+      mentions: 5876,
+      change: 2.3,
+      region: "North America"
+    },
+    {
+      rank: 10,
+      name: "Applebee's",
+      coverage: 56.3,
+      avgPosition: 1.94,
+      logo: "🍎",
+      category: "Casual Dining",
+      mentions: 5432,
+      change: 0.9,
+      region: "North America"
+    },
+    {
+      rank: 11,
+      name: "Maggiano's",
+      coverage: 52.1,
+      avgPosition: 2.15,
+      logo: "🍝",
+      category: "Fine Dining",
+      mentions: 4987,
+      change: 1.4,
+      region: "North America"
+    },
+    {
+      rank: 12,
+      name: "Outback Steakhouse",
+      coverage: 49.8,
+      avgPosition: 2.28,
+      logo: "🥩",
+      category: "Steakhouse",
+      mentions: 4621,
+      change: -0.5,
+      region: "Global"
+    }
+  ],
+
   brands: [
     { name: "Olive Garden", coverage: 48, rank: 1.59, logo: "🫒" },
     { name: "Maggiano's", coverage: 63, rank: 2.6, logo: "🍝" },
@@ -57,6 +194,30 @@ const baseData = {
     { domain: "zomato.com", citations: 421, coverage: 8.1, change: 2.2 },
   ],
 };
+
+// Get global brands data with filtering
+export function getGlobalBrandsData(filters?: FilterState) {
+  let brandsData = [...baseData.globalBrands];
+
+  // Apply category filter
+  if (filters?.category && filters.category !== "All Categories") {
+    brandsData = brandsData.filter(brand =>
+      brand.category.toLowerCase().includes(filters.category!.toLowerCase())
+    );
+  }
+
+  // Apply search/text filter if needed
+  if (filters?.brand) {
+    const selectedBrandName = getBrandName(filters.brand);
+    // Mark the selected brand
+    brandsData = brandsData.map(brand => ({
+      ...brand,
+      isSelected: brand.name === selectedBrandName
+    }));
+  }
+
+  return brandsData;
+}
 
 // Apply filters to data
 export function getFilteredData(filters: FilterState) {
@@ -113,6 +274,9 @@ export function getFilteredData(filters: FilterState) {
         filteredData.kpiMetrics.brandCoverage.change * attributeMultiplier * 10,
       ) / 10;
   }
+
+  // Add global brands data
+  filteredData.globalBrands = getGlobalBrandsData(filters);
 
   return filteredData;
 }
