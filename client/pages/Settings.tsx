@@ -463,7 +463,7 @@ export default function Settings() {
                       <Button
                         onClick={handleAddBrand}
                         className="bg-[#9369F6] hover:bg-[#7C3AED] text-white"
-                        disabled={!newBrand.name || !newBrand.category}
+                        disabled={!newBrand.name || !newBrand.url || !newBrand.category}
                       >
                         <Save className="h-4 w-4 mr-2" />
                         Add Brand
@@ -472,7 +472,7 @@ export default function Settings() {
                         variant="outline"
                         onClick={() => {
                           setIsAddingBrand(false);
-                          setNewBrand({ name: "", category: "", description: "" });
+                          setNewBrand({ name: "", url: "", category: "", description: "" });
                         }}
                       >
                         <X className="h-4 w-4 mr-2" />
