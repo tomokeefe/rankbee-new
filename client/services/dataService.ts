@@ -199,6 +199,16 @@ const baseData = {
 export function getGlobalBrandsData(filters?: FilterState) {
   let brandsData = [...baseData.globalBrands];
 
+  // Safety check for filters
+  if (!filters) {
+    return brandsData;
+  }
+
+  // Ensure category is an array if it exists
+  if (filters.category && !Array.isArray(filters.category)) {
+    filters.category = [filters.category as any];
+  }
+
   // Apply category filter
   if (filters?.category && Array.isArray(filters.category) && filters.category.length > 0) {
     brandsData = brandsData.filter(brand =>
