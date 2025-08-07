@@ -309,13 +309,17 @@ export function getFilteredData(filters: FilterState) {
   }
 
   // Apply date range filter
-  if (filters.dateRange) {
-    const startDate = filters.dateRange.from.toISOString().split("T")[0];
-    const endDate = filters.dateRange.to.toISOString().split("T")[0];
+  if (filters.dateRange && filters.dateRange.from && filters.dateRange.to) {
+    try {
+      const startDate = filters.dateRange.from.toISOString().split("T")[0];
+      const endDate = filters.dateRange.to.toISOString().split("T")[0];
 
-    filteredData.timeSeriesData = filteredData.timeSeriesData.filter(
-      (item: any) => item.date >= startDate && item.date <= endDate,
-    );
+      filteredData.timeSeriesData = filteredData.timeSeriesData.filter(
+        (item: any) => item.date >= startDate && item.date <= endDate,
+      );
+    } catch (error) {
+      console.warn("Error applying date range filter:", error);
+    }
   }
 
   // Apply attributes filter
