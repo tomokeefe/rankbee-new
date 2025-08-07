@@ -192,16 +192,15 @@ Limit to 5-8 most significant insights.
       }),
     });
 
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock insights");
+      return generateMockInsights(brandName);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error details:", response.status, errorText);
-
-      // Handle quota exceeded error specifically
-      if (response.status === 429) {
-        console.warn("Gemini API quota exceeded, falling back to mock insights");
-        return generateMockInsights(brandName);
-      }
-
       throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
