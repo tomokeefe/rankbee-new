@@ -128,16 +128,16 @@ export function FilterBar() {
               Subcategory
             </label>
             <Select
-              value={(filters.subcategory && filters.subcategory.length > 0) ? filters.subcategory[0] : ""}
+              value={filters.subcategory}
               onValueChange={handleSubcategoryChange}
-              disabled={!filters.category || filters.category.length === 0}
+              disabled={!filters.category}
             >
               <SelectTrigger
                 className={cn(
                   "h-9 text-sm border border-gray-300 bg-white",
                   "hover:bg-gray-50 hover:border-gray-400",
-                  (filters.subcategory && filters.subcategory.length > 0) && "border-purple-600 bg-purple-50",
-                  (!filters.category || filters.category.length === 0) && "opacity-50 cursor-not-allowed",
+                  filters.subcategory && "border-purple-600 bg-purple-50",
+                  !filters.category && "opacity-50 cursor-not-allowed",
                 )}
               >
                 <SelectValue placeholder="Select" />
