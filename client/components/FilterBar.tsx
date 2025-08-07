@@ -43,13 +43,13 @@ export function FilterBar() {
   const { filters, updateFilter } = useFilters();
 
   const handleCategoryChange = (value: string) => {
-    updateFilter("category", value);
+    updateFilter("category", [value]);
     // Reset subcategory when category changes
-    updateFilter("subcategory", "");
+    updateFilter("subcategory", []);
   };
 
   const handleSubcategoryChange = (value: string) => {
-    updateFilter("subcategory", value);
+    updateFilter("subcategory", [value]);
   };
 
   const handlePriceRangeChange = (value: string) => {
@@ -69,8 +69,8 @@ export function FilterBar() {
   };
 
   const clearFilters = () => {
-    updateFilter("category", "");
-    updateFilter("subcategory", "");
+    updateFilter("category", []);
+    updateFilter("subcategory", []);
     updateFilter("priceRange", "");
     updateFilter("attributes", []);
   };
@@ -96,14 +96,14 @@ export function FilterBar() {
               Category
             </label>
             <Select
-              value={filters.category}
+              value={filters.category?.[0] || ""}
               onValueChange={handleCategoryChange}
             >
               <SelectTrigger
                 className={cn(
                   "h-9 text-sm border border-gray-300 bg-white",
                   "hover:bg-gray-50 hover:border-gray-400",
-                  filters.category && "border-purple-600 bg-purple-50",
+                  filters.category && filters.category.length > 0 && "border-purple-600 bg-purple-50",
                 )}
               >
                 <SelectValue placeholder="Select" />
@@ -128,16 +128,16 @@ export function FilterBar() {
               Subcategory
             </label>
             <Select
-              value={filters.subcategory}
+              value={filters.subcategory?.[0] || ""}
               onValueChange={handleSubcategoryChange}
-              disabled={!filters.category}
+              disabled={!filters.category || filters.category.length === 0}
             >
               <SelectTrigger
                 className={cn(
                   "h-9 text-sm border border-gray-300 bg-white",
                   "hover:bg-gray-50 hover:border-gray-400",
-                  filters.subcategory && "border-purple-600 bg-purple-50",
-                  !filters.category && "opacity-50 cursor-not-allowed",
+                  filters.subcategory && filters.subcategory.length > 0 && "border-purple-600 bg-purple-50",
+                  (!filters.category || filters.category.length === 0) && "opacity-50 cursor-not-allowed",
                 )}
               >
                 <SelectValue placeholder="Select" />
