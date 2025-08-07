@@ -56,17 +56,9 @@ export function SidebarNavigation() {
                   "w-5 h-5 flex-shrink-0",
                   isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700"
                 )} />
-                <div className="flex flex-col">
-                  <span className="font-medium text-sm">
-                    {item.name}
-                  </span>
-                  <span className={cn(
-                    "text-xs",
-                    isActive ? "text-purple-100" : "text-gray-500"
-                  )}>
-                    {item.description}
-                  </span>
-                </div>
+                <span className="font-medium text-sm">
+                  {item.name}
+                </span>
               </Link>
             );
           })}
