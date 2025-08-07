@@ -20,7 +20,7 @@ export default function Index() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#384255]">Snapshot</h1>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Snapshot</h1>
             <p className="text-gray-600">Overview and performance metrics for {brandName}</p>
           </div>
         </div>
