@@ -51,7 +51,7 @@ const sentimentIcons = {
 };
 
 export default function PromptDeepDive() {
-  const { filters } = useFilters();
+  const { filters, brands } = useFilters();
   const [prompts, setPrompts] = useState<PromptAnalysis[]>(mockPromptAnalyses);
   const [newPrompt, setNewPrompt] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
