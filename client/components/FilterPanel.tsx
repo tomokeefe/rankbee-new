@@ -123,6 +123,23 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
           </div>
 
           <div className="p-4 space-y-6">
+            {/* Model Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#384255]">Model</label>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
+                  <SelectValue placeholder="Select model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {modelOptions.map((model) => (
+                    <SelectItem key={model} value={model} className="py-2">
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Date Range Filter */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-[#384255]">Date Range</label>
