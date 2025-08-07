@@ -148,7 +148,7 @@ export function Summary() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <IconComponent className={`h-4 w-4 ${insight.iconColor}`} />
-                      <span className="text-xs font-medium text-gray-700">
+                      <span className="text-sm font-bold text-gray-700">
                         {insight.metric}
                       </span>
                     </div>
