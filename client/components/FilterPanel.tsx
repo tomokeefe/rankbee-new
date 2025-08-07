@@ -65,6 +65,19 @@ const modelOptions = [
 
 export function FilterPanel({ onClose }: FilterPanelProps) {
   const { filters, updateFilter } = useFilters();
+
+  // Early safety check
+  if (!filters) {
+    console.error("FilterPanel: filters is undefined");
+    return (
+      <Card className="absolute top-full right-0 mt-2 w-[480px] shadow-xl border-0 z-50 bg-white rounded-lg overflow-hidden">
+        <CardContent className="p-4">
+          <p>Error: Filter context not available</p>
+          <Button onClick={onClose}>Close</Button>
+        </CardContent>
+      </Card>
+    );
+  }
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
     from: undefined,
     to: undefined,
