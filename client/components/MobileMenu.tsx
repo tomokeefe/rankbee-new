@@ -119,12 +119,18 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
         {/* Tabs */}
         <Tabs defaultValue="filters" className="flex-1">
-          <TabsList className="grid w-full grid-cols-2 mx-4 mt-4">
-            <TabsTrigger value="filters" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-2 mx-4 mt-4 bg-gray-100">
+            <TabsTrigger
+              value="filters"
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-[#9369F6] data-[state=active]:font-semibold data-[state=active]:shadow-sm"
+            >
               <Filter className="h-4 w-4" />
               Filters
             </TabsTrigger>
-            <TabsTrigger value="menu" className="flex items-center gap-2">
+            <TabsTrigger
+              value="menu"
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-[#9369F6] data-[state=active]:font-semibold data-[state=active]:shadow-sm"
+            >
               <Menu className="h-4 w-4" />
               Menu
             </TabsTrigger>
