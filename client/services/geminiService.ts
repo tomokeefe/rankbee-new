@@ -381,6 +381,13 @@ Return as a simple JSON array of strings.
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error details:", response.status, errorText);
+
+      // Handle quota exceeded error specifically
+      if (response.status === 429) {
+        console.warn("Gemini API quota exceeded, falling back to mock suggestions");
+        return generateMockSuggestions(brandName, category);
+      }
+
       throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
