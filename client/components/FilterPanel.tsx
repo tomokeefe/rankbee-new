@@ -90,6 +90,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   };
 
   const clearAllFilters = () => {
+    setSelectedModel("ChatGPT");
     setDateRange({ from: undefined, to: undefined });
     setSelectedAttributes([]);
     updateFilter("category", "All Categories");
