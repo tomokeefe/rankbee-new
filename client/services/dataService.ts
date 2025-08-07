@@ -366,8 +366,8 @@ function getCategoryName(category: string | string[]): string {
 export function getMockMetrics(brand: string, timeframe: string) {
   const filters: FilterState = {
     brand,
-    category: "",
-    subcategory: "",
+    category: [],
+    subcategory: [],
     attributes: [],
     dateRange: null,
     timeframe
