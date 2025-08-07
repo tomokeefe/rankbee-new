@@ -35,6 +35,11 @@ const navItems = [
     href: "/citations",
     icon: FileText
   },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: Settings
+  },
 ];
 
 export function SidebarNavigation() {
