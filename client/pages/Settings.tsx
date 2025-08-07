@@ -43,6 +43,7 @@ import {
 interface Brand {
   id: string;
   name: string;
+  url: string;
   category: string;
   status: "active" | "inactive";
   addedDate: string;
