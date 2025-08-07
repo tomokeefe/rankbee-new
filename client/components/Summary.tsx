@@ -155,7 +155,10 @@ export function Summary() {
           </Button>
         </div>
         <p className="text-xs text-gray-500">
-          AI-powered insights from your brand performance data
+          {isUsingFallback
+            ? "Sample insights shown (AI analysis quota exceeded)"
+            : "AI-powered insights from your brand performance data"
+          }
         </p>
       </CardHeader>
       <CardContent className="pt-0">
