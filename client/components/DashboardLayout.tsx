@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
-import { FilterBar } from "./FilterBar";
 import { SidebarNavigation } from "./SidebarNavigation";
 
 interface DashboardLayoutProps {
@@ -11,10 +10,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <FilterBar />
       <div className="flex">
         <SidebarNavigation />
-        <main className="flex-1 min-h-[calc(100vh-140px)]">
+        <main className="flex-1 min-h-[calc(100vh-90px)]">
           {children}
         </main>
       </div>
