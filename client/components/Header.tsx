@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFilters } from "../contexts/FilterContext";
+import { Link } from "react-router-dom";
 import { ChevronDown, Headphones, Filter, Mail, User, Settings, LogOut, HelpCircle, MessageCircle, Phone, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
