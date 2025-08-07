@@ -72,18 +72,28 @@ export function Header() {
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="min-w-[311px]">
-                  {brands.map((brand) => (
-                    <SelectItem
-                      key={brand.value}
-                      value={brand.value}
-                      className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-purple-600" />
-                        {brand.label}
-                      </div>
-                    </SelectItem>
-                  ))}
+                  {brands.map((brand) => {
+                    const isSelected = filters.brand === brand.value;
+                    return (
+                      <SelectItem
+                        key={brand.value}
+                        value={brand.value}
+                        className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
+                      >
+                        <div className="flex items-center gap-3 w-full">
+                          <div className={`w-3 h-3 rounded-full ${isSelected ? 'bg-purple-600' : 'bg-gray-300'}`} />
+                          <span className={isSelected ? 'font-semibold' : ''}>{brand.label}</span>
+                          {isSelected && (
+                            <div className="ml-auto">
+                              <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
 
