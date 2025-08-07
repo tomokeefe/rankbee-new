@@ -105,13 +105,7 @@ export function Summary() {
     <Card className="mb-6">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-base font-semibold">Summary</CardTitle>
-            <div className="flex items-center gap-1">
-              <Brain className="h-4 w-4 text-purple-600" />
-              <Sparkles className="h-3 w-3 text-purple-400" />
-            </div>
-          </div>
+          <CardTitle className="text-lg font-semibold">Summary</CardTitle>
           <Button
             variant="ghost"
             size="sm"
