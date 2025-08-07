@@ -8,29 +8,25 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { 
-    name: "Snapshot", 
-    href: "/", 
-    icon: BarChart3,
-    description: "Brand Overview"
+  {
+    name: "Snapshot",
+    href: "/",
+    icon: BarChart3
   },
-  { 
-    name: "Gaps", 
-    href: "/visibility", 
-    icon: TrendingDown,
-    description: "Performance Gaps"
+  {
+    name: "Gaps",
+    href: "/visibility",
+    icon: TrendingDown
   },
-  { 
-    name: "Prompts", 
-    href: "/prompts", 
-    icon: MessageSquare,
-    description: "Prompt Deep Dive"
+  {
+    name: "Prompts",
+    href: "/prompts",
+    icon: MessageSquare
   },
-  { 
-    name: "Citations", 
-    href: "/citations", 
-    icon: FileText,
-    description: "Citation Analysis"
+  {
+    name: "Citations",
+    href: "/citations",
+    icon: FileText
   },
 ];
 
