@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarDays, X, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarDays, X, Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {
@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Badge } from "./ui/badge";
+import { Checkbox } from "./ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { format } from "date-fns";
