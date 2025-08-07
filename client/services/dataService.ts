@@ -163,7 +163,7 @@ const baseData = {
     { name: "Brinker Intl.", coverage: 13, rank: 3.16, logo: "🍔" },
     { name: "Buca Di Beppo", coverage: 52, rank: 3.24, logo: "🍕" },
     { name: "Buca Inc.", coverage: 8.61, rank: 3.61, logo: "🥘" },
-    { name: "Pasta Pomodoro", coverage: 11, rank: 4.53, logo: "🍅" },
+    { name: "Pasta Pomodoro", coverage: 11, rank: 4.53, logo: "��" },
   ],
 
   categoryBreakdown: [
@@ -323,7 +323,7 @@ export function getFilteredData(filters: FilterState) {
   }
 
   // Apply attributes filter
-  if (filters.attributes.length > 0) {
+  if (filters.attributes && Array.isArray(filters.attributes) && filters.attributes.length > 0) {
     const attributeMultiplier = 1 + filters.attributes.length * 0.1; // 10% boost per attribute
     filteredData.kpiMetrics.brandCoverage.change =
       Math.round(
