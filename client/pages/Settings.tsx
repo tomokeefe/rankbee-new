@@ -66,36 +66,7 @@ export default function Settings() {
     }
   });
   
-  // Brands/Connections State
-  const [brands, setBrands] = useState<Brand[]>([
-    {
-      id: "1",
-      name: "Olive Garden",
-      url: "https://www.olivegarden.com",
-      category: "Casual Dining",
-      status: "active",
-      addedDate: "2025-01-01",
-      description: "Family-friendly Italian restaurant chain"
-    },
-    {
-      id: "2",
-      name: "Maggiano's",
-      url: "https://www.maggianos.com",
-      category: "Fine Dining",
-      status: "active",
-      addedDate: "2025-01-05",
-      description: "Upscale Italian restaurant"
-    },
-    {
-      id: "3",
-      name: "Carrabba's",
-      url: "https://www.carrabbas.com",
-      category: "Casual Dining",
-      status: "inactive",
-      addedDate: "2024-12-15",
-      description: "Italian-American restaurant chain"
-    }
-  ]);
+  // Brand form state
   
   const [newBrand, setNewBrand] = useState({
     name: "",
