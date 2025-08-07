@@ -270,7 +270,7 @@ export default function CitationAnalysis() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1240px] mx-auto px-6 space-y-6">
+      <div className="p-6 space-y-6">
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
