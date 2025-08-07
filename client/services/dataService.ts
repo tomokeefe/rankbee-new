@@ -328,7 +328,13 @@ function getBrandName(brand: string): string {
   return names[brand] || brand;
 }
 
-function getCategoryMultiplier(category: string): number {
+function getCategoryMultiplier(category: string | string[] | undefined): number {
+  if (!category) return 1;
+  if (Array.isArray(category)) {
+    if (category.length === 0) return 1;
+    category = category[0]; // Use first category if array
+  }
+
   const multipliers: Record<string, number> = {
     italian: 1.3,
     casual: 1.1,
