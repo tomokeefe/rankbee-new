@@ -5,7 +5,6 @@ import { TimeSeriesChart } from "../components/TimeSeriesChart";
 import { BreakdownCharts } from "../components/BreakdownCharts";
 import { Top10Brands } from "../components/Top10Brands";
 import { CitationsTable } from "../components/DataTable";
-import { AIDashboard } from "../components/AIDashboard";
 
 export default function Index() {
   return (
@@ -14,10 +13,7 @@ export default function Index() {
         {/* KPI Cards */}
         <KPICards />
 
-        {/* AI-Powered Dashboard */}
-        <AIDashboard />
-
-        {/* Summary below AI Dashboard */}
+        {/* Summary */}
         <Summary />
 
         {/* Time Series Chart */}
