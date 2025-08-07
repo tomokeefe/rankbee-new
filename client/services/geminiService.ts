@@ -302,13 +302,12 @@ Return as a simple JSON array of strings.
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Gemini API error details:", response.status, errorText);
-      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
-    }
-
     const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Gemini API error details:", response.status, data);
+      throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(data)}`);
+    }
 
     if (!data.candidates || !data.candidates[0]) {
       throw new Error("No candidates in AI response");
