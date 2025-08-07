@@ -167,11 +167,6 @@ export function Header() {
           </div>
         </div>
       </header>
-
-      {/* Filter Panel */}
-      {showFilters && (
-        <FilterPanel onClose={() => setShowFilters(false)} />
-      )}
     </>
   );
 }
