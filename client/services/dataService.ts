@@ -332,24 +332,34 @@ function getBrandName(brand: string): string {
   return names[brand] || brand;
 }
 
-function getCategoryMultiplier(category: string): number {
+function getCategoryMultiplier(category: string | string[]): number {
+  if (Array.isArray(category)) {
+    category = category.length > 0 ? category[0] : "";
+  }
+  if (!category) return 1;
+
   const multipliers: Record<string, number> = {
     italian: 1.3,
     casual: 1.1,
     family: 0.9,
     chain: 0.8,
   };
-  return multipliers[category] || 1;
+  return multipliers[category.toLowerCase()] || 1;
 }
 
-function getCategoryName(category: string): string {
+function getCategoryName(category: string | string[]): string {
+  if (Array.isArray(category)) {
+    category = category.length > 0 ? category[0] : "";
+  }
+  if (!category) return "";
+
   const names: Record<string, string> = {
     italian: "Italian Restaurant",
     casual: "Casual Dining",
     family: "Family Restaurant",
     chain: "Chain Restaurant",
   };
-  return names[category] || category;
+  return names[category.toLowerCase()] || category;
 }
 
 // Export function for AI components
