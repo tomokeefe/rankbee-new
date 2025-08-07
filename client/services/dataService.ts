@@ -338,7 +338,13 @@ function getCategoryMultiplier(category: string): number {
   return multipliers[category] || 1;
 }
 
-function getCategoryName(category: string): string {
+function getCategoryName(category: string | string[] | undefined): string {
+  if (!category) return "";
+  if (Array.isArray(category)) {
+    if (category.length === 0) return "";
+    category = category[0]; // Use first category if array
+  }
+
   const names: Record<string, string> = {
     italian: "Italian Restaurant",
     casual: "Casual Dining",
