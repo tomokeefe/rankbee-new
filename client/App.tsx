@@ -28,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/categories" element={<CategoryOverview />} />
+            <Route path="/trends" element={<Trends />} />
             <Route path="/visibility" element={<Visibility />} />
             <Route path="/brands" element={<BrandOverview />} />
             <Route path="/prompts" element={<PromptDeepDive />} />
