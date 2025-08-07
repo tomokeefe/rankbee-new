@@ -92,32 +92,32 @@ export default function Settings() {
 
   const handleAddBrand = () => {
     if (newBrand.name && newBrand.url && newBrand.category) {
-      const brand: Brand = {
-        id: Date.now().toString(),
+      const brandData = {
         name: newBrand.name,
         url: newBrand.url,
         category: newBrand.category,
         description: newBrand.description,
-        status: "active",
+        status: "active" as const,
         addedDate: new Date().toISOString().split('T')[0]
       };
 
-      setBrands([...brands, brand]);
+      addBrand(brandData);
       setNewBrand({ name: "", url: "", category: "", description: "" });
       setIsAddingBrand(false);
     }
   };
 
   const handleDeleteBrand = (id: string) => {
-    setBrands(brands.filter(brand => brand.id !== id));
+    deleteBrand(id);
   };
 
   const handleToggleBrandStatus = (id: string) => {
-    setBrands(brands.map(brand => 
-      brand.id === id 
-        ? { ...brand, status: brand.status === "active" ? "inactive" : "active" }
-        : brand
-    ));
+    const brand = brands.find(b => b.id === id);
+    if (brand) {
+      updateBrand(id, {
+        status: brand.status === "active" ? "inactive" : "active"
+      });
+    }
   };
 
   const categories = [
