@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
 import { getBrandVisibilityData, generateVisibilityInsights, getBrandDisplayName } from "../services/visibilityService";
+import { useToast } from "../hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -42,6 +43,8 @@ export default function Visibility() {
   const { filters, brands } = useFilters();
   const [aiInsights, setAiInsights] = useState<any[]>([]);
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const { toast } = useToast();
 
   const visibilityData = getBrandVisibilityData(filters.brand);
   const brandName = getBrandDisplayName(filters.brand);
@@ -52,11 +55,22 @@ export default function Visibility() {
 
   const loadAIInsights = async () => {
     setIsLoadingInsights(true);
+    setIsUsingFallback(false);
     try {
       const insights = await generateVisibilityInsights(filters.brand);
       setAiInsights(insights);
     } catch (error) {
       console.error("Error loading AI insights:", error);
+      setIsUsingFallback(true);
+
+      // Show user-friendly notification for quota errors
+      if (error instanceof Error && error.message.includes('429')) {
+        toast({
+          title: "AI Analysis Unavailable",
+          description: "Using sample insights due to API quota limits. Data shown is for demonstration purposes.",
+          variant: "default",
+        });
+      }
     } finally {
       setIsLoadingInsights(false);
     }
@@ -163,7 +177,10 @@ export default function Visibility() {
                 </Button>
               </div>
               <p className="text-xs text-gray-500">
-                AI-powered insights from your visibility performance data
+                {isUsingFallback
+                  ? "Sample insights shown (AI analysis quota exceeded)"
+                  : "AI-powered insights from your visibility performance data"
+                }
               </p>
             </CardHeader>
             <CardContent className="pt-0">
