@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarDays, X, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarDays, X, Calendar as CalendarIcon, ChevronDown, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {
@@ -10,10 +10,12 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Badge } from "./ui/badge";
+import { Checkbox } from "./ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { format } from "date-fns";
 import { useFilters } from "../contexts/FilterContext";
+import { cn } from "../lib/utils";
 
 interface FilterPanelProps {
   onClose: () => void;
@@ -69,9 +71,39 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   });
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("ChatGPT");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(filters.category || []);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(filters.subcategory || []);
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
+  const [subcategoryPopoverOpen, setSubcategoryPopoverOpen] = useState(false);
 
-  const handleCategoryChange = (value: string) => {
-    updateFilter("category", value);
+  const handleCategoryToggle = (category: string) => {
+    if (category === "All Categories") {
+      const newCategories: string[] = [];
+      setSelectedCategories(newCategories);
+      updateFilter("category", newCategories);
+      return;
+    }
+
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+    setSelectedCategories(newCategories);
+    updateFilter("category", newCategories);
+  };
+
+  const handleSubcategoryToggle = (subcategory: string) => {
+    if (subcategory === "All Subcategories") {
+      const newSubcategories: string[] = [];
+      setSelectedSubcategories(newSubcategories);
+      updateFilter("subcategory", newSubcategories);
+      return;
+    }
+
+    const newSubcategories = selectedSubcategories.includes(subcategory)
+      ? selectedSubcategories.filter(s => s !== subcategory)
+      : [...selectedSubcategories, subcategory];
+    setSelectedSubcategories(newSubcategories);
+    updateFilter("subcategory", newSubcategories);
   };
 
   const handleDateRangeChange = (range: { from: Date | undefined; to: Date | undefined }) => {
@@ -81,20 +113,19 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     }
   };
 
-  const toggleAttribute = (attribute: string) => {
-    const newAttributes = selectedAttributes.includes(attribute)
-      ? selectedAttributes.filter(a => a !== attribute)
-      : [...selectedAttributes, attribute];
-    setSelectedAttributes(newAttributes);
-    updateFilter("attributes", newAttributes);
+  const handleAttributeChange = (attribute: string) => {
+    setSelectedAttributes([attribute]);
+    updateFilter("attributes", [attribute]);
   };
 
   const clearAllFilters = () => {
     setSelectedModel("ChatGPT");
     setDateRange({ from: undefined, to: undefined });
     setSelectedAttributes([]);
-    updateFilter("category", "All Categories");
-    updateFilter("subcategory", "All Subcategories");
+    setSelectedCategories([]);
+    setSelectedSubcategories([]);
+    updateFilter("category", []);
+    updateFilter("subcategory", []);
     updateFilter("dateRange", null);
     updateFilter("attributes", []);
   };
@@ -108,7 +139,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       />
 
       {/* Filter Panel */}
-      <Card className="absolute top-full right-0 mt-2 w-96 shadow-xl border-0 z-50 bg-white rounded-lg overflow-hidden">
+      <Card className="absolute top-full right-0 mt-2 w-[480px] shadow-xl border-0 z-50 bg-white rounded-lg overflow-hidden">
         <CardContent className="p-0">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-gray-50">
@@ -177,62 +208,163 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
               </Popover>
             </div>
 
-            {/* Category Filter */}
+            {/* Category Filter - Multi-select */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#384255]">Category</label>
-              <Select value={filters.category || "All Categories"} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((category) => (
-                    <SelectItem key={category} value={category} className="py-2">
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Subcategory Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#384255]">Subcategory</label>
-              <Select value={filters.subcategory || "All Subcategories"} onValueChange={(value) => updateFilter("subcategory", value)}>
-                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select subcategory" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategoryOptions.map((subcategory) => (
-                    <SelectItem key={subcategory} value={subcategory} className="py-2">
-                      {subcategory}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Attributes Filter */}
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-[#384255]">Attributes</label>
-              <div className="flex flex-wrap gap-2">
-                {attributeOptions.map((attribute) => {
-                  const isSelected = selectedAttributes.includes(attribute);
-                  return (
+              <label className="text-sm font-semibold text-[#384255]">Category (Multi-select)</label>
+              <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 text-left"
+                  >
+                    <span className="truncate">
+                      {selectedCategories.length === 0
+                        ? "Select categories"
+                        : selectedCategories.length === 1
+                        ? selectedCategories[0]
+                        : `${selectedCategories.length} categories selected`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[440px] p-0" align="start">
+                  <div className="max-h-64 overflow-y-auto">
+                    {categoryOptions.map((category) => (
+                      <div
+                        key={category}
+                        className="flex items-center space-x-2 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleCategoryToggle(category)}
+                      >
+                        <Checkbox
+                          checked={category === "All Categories" ? selectedCategories.length === 0 : selectedCategories.includes(category)}
+                          className="data-[state=checked]:bg-[#9369F6] data-[state=checked]:border-[#9369F6]"
+                        />
+                        <label className="text-sm font-medium cursor-pointer flex-1">
+                          {category}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedCategories.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedCategories.map((category) => (
                     <Badge
-                      key={attribute}
-                      variant={isSelected ? "default" : "outline"}
-                      className={`cursor-pointer px-3 py-1 text-xs transition-all duration-200 ${
-                        isSelected
-                          ? "bg-[#9369F6] text-white hover:bg-[#7C3AED] border-[#9369F6]"
-                          : "text-gray-600 border-gray-300 hover:border-[#9369F6] hover:text-[#9369F6] bg-white"
-                      }`}
-                      onClick={() => toggleAttribute(attribute)}
+                      key={category}
+                      variant="secondary"
+                      className="text-xs bg-[#9369F6]/10 text-[#9369F6] border-[#9369F6]/20"
                     >
-                      {attribute}
+                      {category}
+                      <X
+                        className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryToggle(category);
+                        }}
+                      />
                     </Badge>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Subcategory Filter - Multi-select */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#384255]">Subcategory (Multi-select)</label>
+              <Popover open={subcategoryPopoverOpen} onOpenChange={setSubcategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 text-left"
+                  >
+                    <span className="truncate">
+                      {selectedSubcategories.length === 0
+                        ? "Select subcategories"
+                        : selectedSubcategories.length === 1
+                        ? selectedSubcategories[0]
+                        : `${selectedSubcategories.length} subcategories selected`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[440px] p-0" align="start">
+                  <div className="max-h-64 overflow-y-auto">
+                    {subcategoryOptions.map((subcategory) => (
+                      <div
+                        key={subcategory}
+                        className="flex items-center space-x-2 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSubcategoryToggle(subcategory)}
+                      >
+                        <Checkbox
+                          checked={subcategory === "All Subcategories" ? selectedSubcategories.length === 0 : selectedSubcategories.includes(subcategory)}
+                          className="data-[state=checked]:bg-[#9369F6] data-[state=checked]:border-[#9369F6]"
+                        />
+                        <label className="text-sm font-medium cursor-pointer flex-1">
+                          {subcategory}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedSubcategories.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedSubcategories.map((subcategory) => (
+                    <Badge
+                      key={subcategory}
+                      variant="secondary"
+                      className="text-xs bg-[#9369F6]/10 text-[#9369F6] border-[#9369F6]/20"
+                    >
+                      {subcategory}
+                      <X
+                        className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSubcategoryToggle(subcategory);
+                        }}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Attributes Filter - Dropdown */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#384255]">Attributes</label>
+              <Select value={selectedAttributes[0] || ""} onValueChange={handleAttributeChange}>
+                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
+                  <SelectValue placeholder="Select attribute" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="" className="py-2">
+                    No attribute selected
+                  </SelectItem>
+                  {attributeOptions.map((attribute) => (
+                    <SelectItem key={attribute} value={attribute} className="py-2">
+                      {attribute}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedAttributes.length > 0 && selectedAttributes[0] && (
+                <div className="mt-2">
+                  <Badge
+                    variant="secondary"
+                    className="text-xs bg-[#9369F6]/10 text-[#9369F6] border-[#9369F6]/20"
+                  >
+                    {selectedAttributes[0]}
+                    <X
+                      className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500"
+                      onClick={() => {
+                        setSelectedAttributes([]);
+                        updateFilter("attributes", []);
+                      }}
+                    />
+                  </Badge>
+                </div>
+              )}
             </div>
           </div>
 
