@@ -58,7 +58,13 @@ Focus on understanding what the user is looking for and how it relates to brand 
       }),
     });
 
-    // Clone the response so we can read it multiple times if needed
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini API error details:", response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+    }
+
+    // Clone the response before any read operations
     const responseClone = response.clone();
 
     let data;
@@ -66,14 +72,14 @@ Focus on understanding what the user is looking for and how it relates to brand 
       data = await response.json();
     } catch (parseError) {
       // If JSON parsing fails, try reading as text for debugging
-      const text = await responseClone.text();
-      console.error("Failed to parse JSON response:", text);
-      throw new Error("Invalid JSON response from API");
-    }
-
-    if (!response.ok) {
-      console.error("Gemini API error details:", response.status, data);
-      throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(data)}`);
+      try {
+        const text = await responseClone.text();
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Invalid JSON response from API");
+      } catch (cloneError) {
+        console.error("Failed to read response as text:", cloneError);
+        throw new Error("Unable to read API response");
+      }
     }
 
     if (!data.candidates || !data.candidates[0]) {
