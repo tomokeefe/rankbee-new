@@ -47,6 +47,7 @@ export function Header() {
   const [showFilters, setShowFilters] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("ChatGPT");
   const [contactForm, setContactForm] = useState({
     subject: "",
     message: "",
