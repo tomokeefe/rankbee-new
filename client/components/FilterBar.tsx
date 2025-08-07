@@ -43,13 +43,13 @@ export function FilterBar() {
   const { filters, updateFilter } = useFilters();
 
   const handleCategoryChange = (value: string) => {
-    updateFilter("category", [value]);
+    updateFilter("category", value);
     // Reset subcategory when category changes
-    updateFilter("subcategory", []);
+    updateFilter("subcategory", "");
   };
 
   const handleSubcategoryChange = (value: string) => {
-    updateFilter("subcategory", [value]);
+    updateFilter("subcategory", value);
   };
 
   const handlePriceRangeChange = (value: string) => {
