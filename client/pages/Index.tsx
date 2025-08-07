@@ -10,7 +10,7 @@ import { AIDashboard } from "../components/AIDashboard";
 export default function Index() {
   return (
     <DashboardLayout>
-      <div className="max-w-[1240px] mx-auto px-6 space-y-6">
+      <div className="p-6 space-y-6">
         {/* KPI Cards */}
         <KPICards />
 
