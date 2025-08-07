@@ -142,6 +142,7 @@ const FilterContext = createContext<FilterContextType>(defaultContextValue);
 
 export function FilterProvider({ children }: { children: ReactNode }) {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [brands, setBrands] = useState<Brand[]>(defaultBrands);
 
   const updateFilter = <K extends keyof FilterState>(
     key: K,
@@ -153,13 +154,46 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const addBrand = (newBrand: Omit<Brand, 'id'>) => {
+    const brand: Brand = {
+      ...newBrand,
+      id: Date.now().toString(),
+      value: newBrand.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      label: newBrand.name,
+    };
+    setBrands((prev) => [...prev, brand]);
+  };
+
+  const updateBrand = (id: string, updatedBrand: Partial<Brand>) => {
+    setBrands((prev) =>
+      prev.map(brand =>
+        brand.id === id
+          ? {
+              ...brand,
+              ...updatedBrand,
+              value: updatedBrand.name ? updatedBrand.name.toLowerCase().replace(/[^a-z0-9]/g, '-') : brand.value,
+              label: updatedBrand.name || brand.label
+            }
+          : brand
+      )
+    );
+  };
+
+  const deleteBrand = (id: string) => {
+    setBrands((prev) => prev.filter(brand => brand.id !== id));
+  };
+
   const resetFilters = () => {
     setFilters(defaultFilters);
   };
 
   const contextValue: FilterContextType = {
     filters,
+    brands,
     updateFilter,
+    addBrand,
+    updateBrand,
+    deleteBrand,
     resetFilters,
   };
 
