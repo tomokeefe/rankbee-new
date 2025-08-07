@@ -33,18 +33,8 @@ import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FilterPanel } from "./FilterPanel";
 
-// Available brands
-const brands = [
-  { value: "olive-garden", label: "Olive Garden" },
-  { value: "maggianos", label: "Maggiano's" },
-  { value: "darden", label: "Darden" },
-  { value: "osteria", label: "Osteria M." },
-  { value: "bloomin", label: "Bloomin' Brands" },
-  { value: "carrabba", label: "Carrabba's" },
-];
-
 export function Header() {
-  const { filters, updateFilter } = useFilters();
+  const { filters, brands, updateFilter } = useFilters();
   const [showFilters, setShowFilters] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
