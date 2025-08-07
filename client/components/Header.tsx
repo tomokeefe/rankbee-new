@@ -66,8 +66,8 @@ export function Header() {
 
               {/* Brand Dropdown */}
               <Select value={filters.brand} onValueChange={handleBrandChange}>
-                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 gap-[100px]">
-                  <SelectValue placeholder="Select Brand">
+                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-between">
+                  <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px]">
                     {displayName}
                   </SelectValue>
                 </SelectTrigger>
