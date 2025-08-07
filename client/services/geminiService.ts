@@ -168,11 +168,13 @@ Limit to 5-8 most significant insights.
       }),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
+      console.error("Gemini API error details:", response.status, responseData);
+      throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(responseData)}`);
     }
 
-    const responseData = await response.json();
     const aiResponse = responseData.candidates[0].content.parts[0].text;
 
     const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
