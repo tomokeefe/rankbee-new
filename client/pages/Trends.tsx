@@ -81,7 +81,7 @@ export default function Trends() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#384255]">Trends Analysis</h1>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Trends Analysis</h1>
             <p className="text-gray-600">Market trends and insights for {brandName}</p>
           </div>
           <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
