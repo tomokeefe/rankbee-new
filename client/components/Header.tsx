@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useFilters } from "../contexts/FilterContext";
-import { ChevronDown, Headphones } from "lucide-react";
+import { ChevronDown, Headphones, Filter, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { FilterPanel } from "./FilterPanel";
 
 // Available brands
 const brands = [
@@ -22,6 +24,7 @@ const brands = [
 
 export function Header() {
   const { filters, updateFilter } = useFilters();
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleBrandChange = (value: string) => {
     updateFilter("brand", value);
@@ -31,74 +34,124 @@ export function Header() {
   const displayName = selectedBrand?.label || "Select Brand";
 
   return (
-    <header className="bg-white border-b border-gray-200 h-20">
-      <div className="flex h-full items-center px-4 lg:px-6">
-        {/* Logo */}
-        <div className="flex items-center gap-4 flex-shrink-0">
-          <img
-            src="https://api.builder.io/api/v1/image/assets/TEMP/3c2b6f10ebb36a0892d78be49e87b8a3f7b89f0d?width=112"
-            alt="RankBee Logo"
-            className="w-14 h-14"
-          />
+    <>
+      <header className="bg-white h-[90px] shadow-md">
+        <div className="flex h-full items-center px-5 pl-[282px] gap-9">
+          {/* Left side - Logo and Brand */}
+          <div className="flex items-center gap-[208px]">
+            <div className="flex items-center gap-[25px]">
+              {/* Logo */}
+              <img
+                src="https://api.builder.io/api/v1/image/assets/TEMP/1aaf17a846b7f6d27c800bb71697497d6f50202a?width=158"
+                alt="RankBee Logo"
+                className="w-[79px] h-[61px]"
+              />
+
+              {/* Divider */}
+              <div className="w-px h-[62px] bg-black opacity-20" />
+
+              {/* Company Name */}
+              <div className="w-[132px] h-[38px]">
+                <span className="text-black font-bold text-[22px] leading-[38px] font-sans">
+                  GrowCreate
+                </span>
+              </div>
+            </div>
+
+            {/* Brand Selector and Filter */}
+            <div className="flex items-center gap-[13px]">
+              <span className="text-[#18181B] font-bold text-[17px] leading-5 opacity-60 font-sans">
+                Brand:
+              </span>
+
+              {/* Brand Dropdown */}
+              <Select value={filters.brand} onValueChange={handleBrandChange}>
+                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 gap-[100px]">
+                  <SelectValue placeholder="Select Brand">
+                    {displayName}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="min-w-[311px]">
+                  {brands.map((brand) => (
+                    <SelectItem
+                      key={brand.value}
+                      value={brand.value}
+                      className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-purple-600" />
+                        {brand.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Filter Icon */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 p-2 rounded-full hover:bg-gray-100"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-5 h-5 text-[#71717A]" strokeWidth={1.33} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right side actions */}
+          <div className="ml-auto flex items-center gap-[10px]">
+            {/* Support Button */}
+            <Button
+              variant="ghost"
+              className="h-10 px-4 text-[#9369F6] hover:text-purple-700 hover:bg-purple-50 gap-2"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                <g clipPath="url(#clip0_24_623)">
+                  <path
+                    d="M3.28679 3.2863L6.11346 6.11296M9.88673 6.11296L12.7134 3.2863M9.88673 9.88639L12.7134 12.7131M6.11346 9.88639L3.28679 12.7131M14.6667 7.99967C14.6667 11.6816 11.6819 14.6663 8.00001 14.6663C4.31811 14.6663 1.33334 11.6816 1.33334 7.99967C1.33334 4.31778 4.31811 1.33301 8.00001 1.33301C11.6819 1.33301 14.6667 4.31778 14.6667 7.99967ZM10.6667 7.99967C10.6667 9.47243 9.47277 10.6663 8.00001 10.6663C6.52725 10.6663 5.33334 9.47243 5.33334 7.99967C5.33334 6.52692 6.52725 5.33301 8.00001 5.33301C9.47277 5.33301 10.6667 6.52692 10.6667 7.99967Z"
+                    stroke="#9369F6"
+                    strokeWidth="1.33"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_24_623">
+                    <rect width="16" height="16" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              <span className="text-sm font-medium">Support</span>
+            </Button>
+
+            {/* Contact Us Button */}
+            <Button
+              variant="ghost"
+              className="h-10 px-4 text-[#9369F6] hover:text-purple-700 hover:bg-purple-50 gap-2"
+            >
+              <Mail className="w-4 h-4" strokeWidth={1.33} />
+              <span className="text-sm font-medium">Contact Us</span>
+            </Button>
+
+            {/* Avatar */}
+            <Avatar className="w-10 h-10 rounded-full">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+                alt="Profile"
+              />
+              <AvatarFallback className="bg-purple-600 text-white text-sm font-medium">
+                TO
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
+      </header>
 
-        {/* Brand Selector */}
-        <div className="flex items-center gap-4 ml-6">
-          <span className="text-gray-600 font-medium">Brand:</span>
-          <Select value={filters.brand} onValueChange={handleBrandChange}>
-            <SelectTrigger className="w-[300px] h-12 border-gray-300 rounded-full bg-gray-50 text-lg font-semibold">
-              <SelectValue placeholder="Select Brand">
-                {displayName}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="min-w-[300px]">
-              {brands.map((brand) => (
-                <SelectItem
-                  key={brand.value}
-                  value={brand.value}
-                  className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-purple-600" />
-                    {brand.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Right side actions */}
-        <div className="ml-auto flex items-center gap-2 flex-shrink-0">
-          {/* Support Button */}
-          <Button
-            variant="ghost"
-            className="h-10 px-4 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-          >
-            <Headphones className="w-4 h-4 mr-2" />
-            Support
-          </Button>
-
-          {/* Contact Us Button */}
-          <Button
-            variant="ghost"
-            className="h-10 px-4 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-          >
-            Contact Us
-          </Button>
-
-          {/* Avatar */}
-          <Avatar className="w-10 h-10">
-            <AvatarImage
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
-              alt="Profile"
-            />
-            <AvatarFallback className="bg-purple-600 text-white text-sm font-medium">
-              TO
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </div>
-    </header>
+      {/* Filter Panel */}
+      {showFilters && (
+        <FilterPanel onClose={() => setShowFilters(false)} />
+      )}
+    </>
   );
 }
