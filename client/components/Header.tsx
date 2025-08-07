@@ -106,7 +106,10 @@ export function Header() {
                   variant="ghost"
                   size="icon"
                   className="w-8 h-8 p-2 rounded-full hover:bg-gray-100"
-                  onClick={() => setShowFilters(!showFilters)}
+                  onClick={() => {
+                    console.log("Filter button clicked, showFilters:", showFilters);
+                    setShowFilters(!showFilters);
+                  }}
                 >
                   <Filter className="w-5 h-5 text-[#71717A]" strokeWidth={1.33} />
                 </Button>
