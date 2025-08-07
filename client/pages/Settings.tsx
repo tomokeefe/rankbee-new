@@ -510,6 +510,11 @@ export default function Settings() {
                             {brand.status}
                           </Badge>
                         </div>
+                        <p className="text-sm text-blue-600 hover:text-blue-800 mt-1">
+                          <a href={brand.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {brand.url}
+                          </a>
+                        </p>
                         <p className="text-sm text-gray-600 mt-1">{brand.category}</p>
                         {brand.description && (
                           <p className="text-sm text-gray-500 mt-1">{brand.description}</p>
