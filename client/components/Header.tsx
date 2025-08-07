@@ -123,7 +123,7 @@ export function Header() {
           </div>
 
           {/* Right side actions */}
-          <div className="ml-auto flex items-center gap-[10px]">
+          <div className="flex items-center gap-[10px] flex-shrink-0">
             {/* Support Button */}
             <Button
               variant="ghost"
