@@ -11,7 +11,10 @@ import {
   Sparkles,
   Target,
   Eye,
-  Users
+  Users,
+  ArrowUp,
+  ArrowDown,
+  RefreshCw
 } from "lucide-react";
 import { analyzeDashboardData } from "../services/geminiService";
 import { getMockMetrics } from "../services/dataService";
@@ -46,7 +49,7 @@ export function Summary() {
           type: 'ranking',
           icon: Target,
           iconColor: 'text-purple-600',
-          text: `${filters.brand} ranks #2 overall in restaurant search visibility, up from #4 last month`,
+          text: `${filters.brand} ranks #2 overall in restaurant search visibility`,
           metric: 'Search Ranking',
           change: 2,
           confidence: 0.92
@@ -55,8 +58,8 @@ export function Summary() {
           type: 'performance',
           icon: TrendingUp,
           iconColor: 'text-green-600',
-          text: 'Brand engagement increased 18% this week, driven by visual content performance',
-          metric: 'Engagement Rate',
+          text: 'Brand engagement increased this week, driven by visual content',
+          metric: 'Engagement',
           change: 18,
           confidence: 0.87
         },
@@ -64,8 +67,8 @@ export function Summary() {
           type: 'opportunity',
           icon: Users,
           iconColor: 'text-blue-600',
-          text: 'AI detected 23% higher conversion potential during evening hours (6-9 PM)',
-          metric: 'Evening Audience',
+          text: 'Higher conversion potential detected during evening hours',
+          metric: 'Evening Traffic',
           change: 23,
           confidence: 0.79
         },
@@ -73,7 +76,7 @@ export function Summary() {
           type: 'alert',
           icon: AlertTriangle,
           iconColor: 'text-amber-600',
-          text: 'Weekend visibility dropped 12% - consider adjusting content schedule for family dining peak times',
+          text: 'Weekend visibility dropped - adjust content for family dining',
           metric: 'Weekend Performance',
           change: -12,
           confidence: 0.84
@@ -88,79 +91,101 @@ export function Summary() {
     }
   };
 
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'ranking': return 'bg-purple-50 border-purple-200';
+      case 'performance': return 'bg-green-50 border-green-200';
+      case 'opportunity': return 'bg-blue-50 border-blue-200';
+      case 'alert': return 'bg-amber-50 border-amber-200';
+      default: return 'bg-gray-50 border-gray-200';
+    }
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          Summary
-          <Brain className="h-4 w-4 text-purple-600" />
-          <Sparkles className="h-3 w-3 text-purple-400" />
-        </CardTitle>
-        <p className="text-xs text-gray-500 mt-1">
-          AI-powered insights based on your brand performance data
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base font-semibold">Summary</CardTitle>
+            <div className="flex items-center gap-1">
+              <Brain className="h-4 w-4 text-purple-600" />
+              <Sparkles className="h-3 w-3 text-purple-400" />
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={generateAISummary}
+            disabled={loading}
+            className="text-xs h-7 px-2"
+          >
+            <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500">
+          AI-powered insights from your brand performance data
         </p>
       </CardHeader>
       <CardContent className="pt-0">
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-start gap-2 animate-pulse">
-                <div className="w-4 h-4 bg-gray-200 rounded mt-0.5"></div>
-                <div className="flex-1">
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="p-3 rounded-lg border animate-pulse">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                  <div className="h-3 bg-gray-200 rounded w-20"></div>
                 </div>
+                <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="space-y-3 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {aiInsights.map((insight, index) => {
               const IconComponent = insight.icon;
               return (
-                <div key={index} className="flex items-start gap-2">
-                  <IconComponent className={`h-4 w-4 mt-0.5 flex-shrink-0 ${insight.iconColor}`} />
-                  <div className="flex-1">
-                    <p className="text-foreground">
-                      {insight.text}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {insight.metric && (
-                        <Badge variant="outline" className="text-xs">
-                          {insight.metric}
-                        </Badge>
-                      )}
-                      {insight.change && (
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${
-                            insight.change > 0 ? 'text-green-600' : 'text-red-600'
-                          }`}
-                        >
-                          {insight.change > 0 ? '+' : ''}{insight.change}%
-                        </Badge>
-                      )}
-                      <Badge variant="outline" className="text-xs text-gray-500">
-                        {Math.round(insight.confidence * 100)}% confidence
-                      </Badge>
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg border transition-all duration-200 hover:shadow-sm ${getTypeColor(insight.type)}`}
+                >
+                  {/* Header with icon, metric, and change */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <IconComponent className={`h-4 w-4 ${insight.iconColor}`} />
+                      <span className="text-xs font-medium text-gray-700">
+                        {insight.metric}
+                      </span>
                     </div>
+                    {insight.change && (
+                      <div className={`flex items-center gap-1 text-xs font-semibold ${
+                        insight.change > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {insight.change > 0 ? (
+                          <ArrowUp className="h-3 w-3" />
+                        ) : (
+                          <ArrowDown className="h-3 w-3" />
+                        )}
+                        {Math.abs(insight.change)}%
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Insight text */}
+                  <p className="text-sm text-gray-800 leading-relaxed mb-2">
+                    {insight.text}
+                  </p>
+                  
+                  {/* Confidence indicator */}
+                  <div className="flex justify-end">
+                    <span className="text-xs text-gray-500">
+                      {Math.round(insight.confidence * 100)}% confidence
+                    </span>
                   </div>
                 </div>
               );
             })}
-          </div>
-        )}
-
-        {!loading && (
-          <div className="flex justify-end mt-4 pt-3 border-t">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={generateAISummary}
-              className="text-xs flex items-center gap-1"
-            >
-              <Sparkles className="h-3 w-3" />
-              Refresh AI Analysis
-            </Button>
           </div>
         )}
       </CardContent>
