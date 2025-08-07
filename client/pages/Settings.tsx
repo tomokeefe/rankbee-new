@@ -422,20 +422,31 @@ export default function Settings() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="brand-category">Category</Label>
-                        <Select value={newBrand.category} onValueChange={(value) => setNewBrand({ ...newBrand, category: value })}>
-                          <SelectTrigger className="border-gray-300 focus:border-[#9369F6] focus:ring-[#9369F6]/20">
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="brand-url">URL</Label>
+                        <Input
+                          id="brand-url"
+                          type="url"
+                          placeholder="https://example.com"
+                          value={newBrand.url}
+                          onChange={(e) => setNewBrand({ ...newBrand, url: e.target.value })}
+                          className="border-gray-300 focus:border-[#9369F6] focus:ring-[#9369F6]/20"
+                        />
                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="brand-category">Category</Label>
+                      <Select value={newBrand.category} onValueChange={(value) => setNewBrand({ ...newBrand, category: value })}>
+                        <SelectTrigger className="border-gray-300 focus:border-[#9369F6] focus:ring-[#9369F6]/20">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="brand-description">Description (Optional)</Label>
