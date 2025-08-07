@@ -534,6 +534,74 @@ function generateMockSuggestions(
   return shuffled.slice(0, 10);
 }
 
+function generateMockInsights(brandName: string): DashboardInsight[] {
+  return [
+    {
+      id: generateId(),
+      type: 'trend',
+      title: `${brandName} showing strong engagement growth`,
+      description: 'Brand engagement has increased by 18% over the past 30 days, with particularly strong performance in visual content.',
+      significance: 'high',
+      actionable: true,
+      suggestedActions: [
+        'Increase visual content production',
+        'Analyze top-performing content themes',
+        'Expand successful content formats'
+      ],
+      confidence: 0.89,
+      timestamp: new Date(),
+      dataContext: { metric: 'engagement', trend: 'up', change: 0.18 }
+    },
+    {
+      id: generateId(),
+      type: 'opportunity',
+      title: 'Untapped evening audience potential',
+      description: 'Data shows 23% lower engagement during 6-9 PM compared to industry benchmarks, suggesting opportunity for targeted evening campaigns.',
+      significance: 'medium',
+      actionable: true,
+      suggestedActions: [
+        'Launch evening-focused campaigns',
+        'Create dinner-time content',
+        'Test promotional timing'
+      ],
+      confidence: 0.76,
+      timestamp: new Date(),
+      dataContext: { timeframe: 'evening', gap: 0.23 }
+    },
+    {
+      id: generateId(),
+      type: 'anomaly',
+      title: 'Unusual weekend performance dip',
+      description: 'Weekend engagement dropped 12% below normal patterns, which is atypical for restaurant brands.',
+      significance: 'medium',
+      actionable: true,
+      suggestedActions: [
+        'Investigate weekend content strategy',
+        'Review competitor weekend activity',
+        'Adjust posting schedule'
+      ],
+      confidence: 0.82,
+      timestamp: new Date(),
+      dataContext: { period: 'weekend', change: -0.12 }
+    }
+  ];
+}
+
+function generateMockChatResponse(query: string): ChatQuery {
+  return {
+    id: generateId(),
+    query,
+    response: `Based on your dashboard data, I can see that your brand metrics show interesting patterns. ${query.includes('engagement') ? 'Your engagement rates are currently trending upward with a 15% increase this month.' : 'The data suggests strong performance across key metrics.'} This indicates positive brand momentum and audience connection.`,
+    timestamp: new Date(),
+    confidence: 0.75,
+    suggestedFollowUp: [
+      'What factors are driving this trend?',
+      'How does this compare to competitors?',
+      'What actions should I take next?'
+    ]
+  };
+}
+
 // Mock data for initial display
 export const mockPromptAnalyses: PromptAnalysis[] = [
   {
