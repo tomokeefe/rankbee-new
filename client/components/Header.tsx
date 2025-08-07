@@ -106,48 +106,82 @@ export function Header() {
             </div>
           </div>
 
-          {/* Center - Brand Selector */}
+          {/* Center - Models and Brand Selector */}
           <div className="flex-1 flex justify-center">
-            <div className="flex items-center gap-[13px]">
-              <span className="text-[#18181B] font-bold text-[17px] leading-5 opacity-60 font-sans">
-                Brand:
-              </span>
+            <div className="flex items-center gap-[20px]">
+              {/* Models Dropdown */}
+              <div className="flex items-center gap-[10px]">
+                <span className="text-[#18181B] font-bold text-[15px] leading-5 opacity-60 font-sans">
+                  Model:
+                </span>
+                <Select value={selectedModel.toLowerCase()} onValueChange={(value) => {
+                  const model = models.find(m => m.value === value);
+                  setSelectedModel(model?.label || "ChatGPT");
+                }}>
+                  <SelectTrigger className="w-[140px] h-[40px] px-[20px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-medium text-[16px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-sm transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
+                    <SelectValue>
+                      {selectedModel}
+                    </SelectValue>
+                    <svg className="absolute right-[15px] h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="8" height="5" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path opacity="0.6" d="M5.05078 5.51282L0 0.487305H10.1016L5.05078 5.51282Z" fill="black"/>
+                    </svg>
+                  </SelectTrigger>
+                  <SelectContent className="min-w-[140px]">
+                    {models.map((model) => (
+                      <SelectItem
+                        key={model.value}
+                        value={model.value}
+                        className="text-sm py-2 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
+                      >
+                        {model.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Brand Dropdown */}
-              <Select value={filters.brand} onValueChange={handleBrandChange}>
-                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-md transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px]">
-                    {displayName}
-                  </SelectValue>
-                  <svg className="absolute right-[33px] h-4 w-4 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="10" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path opacity="0.6" d="M5.05078 5.51282L0 0.487305H10.1016L5.05078 5.51282Z" fill="black"/>
-                  </svg>
-                </SelectTrigger>
-                <SelectContent className="min-w-[311px]">
-                  {brands.map((brand) => {
-                    const isSelected = filters.brand === brand.value;
-                    return (
-                      <SelectItem
-                        key={brand.value}
-                        value={brand.value}
-                        className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
-                      >
-                        <div className="flex items-center gap-3 w-full">
-                          <div className={`w-3 h-3 rounded-full ${isSelected ? 'bg-purple-600' : 'bg-gray-300'}`} />
-                          <span className={isSelected ? 'font-semibold' : ''}>{brand.label}</span>
-                          {isSelected && (
-                            <div className="ml-auto">
-                              <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-[10px]">
+                <span className="text-[#18181B] font-bold text-[15px] leading-5 opacity-60 font-sans">
+                  Brand:
+                </span>
+
+                {/* Brand Dropdown */}
+                <Select value={filters.brand} onValueChange={handleBrandChange}>
+                  <SelectTrigger className="w-[250px] h-[40px] px-[25px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-medium text-[16px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-md transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
+                    <SelectValue placeholder="Select Brand" className="text-[#384255] font-medium text-[16px]">
+                      {displayName}
+                    </SelectValue>
+                    <svg className="absolute right-[20px] h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="8" height="5" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path opacity="0.6" d="M5.05078 5.51282L0 0.487305H10.1016L5.05078 5.51282Z" fill="black"/>
+                    </svg>
+                  </SelectTrigger>
+                  <SelectContent className="min-w-[250px]">
+                    {brands.map((brand) => {
+                      const isSelected = filters.brand === brand.value;
+                      return (
+                        <SelectItem
+                          key={brand.value}
+                          value={brand.value}
+                          className="text-sm py-2 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            <div className={`w-3 h-3 rounded-full ${isSelected ? 'bg-purple-600' : 'bg-gray-300'}`} />
+                            <span className={isSelected ? 'font-semibold' : ''}>{brand.label}</span>
+                            {isSelected && (
+                              <div className="ml-auto">
+                                <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Filter Icon */}
               <div className="relative">
