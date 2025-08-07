@@ -77,8 +77,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-xl">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
+      onClick={onClose}
+    >
+      <div
+        className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
