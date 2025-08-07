@@ -60,15 +60,9 @@ export default function PromptDeepDive() {
   const [filterSentiment, setFilterSentiment] = useState<string>("all");
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
 
-  const brandName = filters.brand
-    ? filters.brand === "olive-garden"
-      ? "Olive Garden"
-      : filters.brand === "maggianos"
-        ? "Maggiano's"
-        : filters.brand === "darden"
-          ? "Darden"
-          : "Your Brand"
-    : "Your Brand";
+  // Get brand name from the brands array in FilterContext
+  const selectedBrand = brands.find(brand => brand.value === filters.brand);
+  const brandName = selectedBrand?.label || "Your Brand";
 
   useEffect(() => {
     // Load suggestions when component mounts
