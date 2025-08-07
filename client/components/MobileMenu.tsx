@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { X, Filter, Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Checkbox } from "./ui/checkbox";
 import {
   BarChart3,
   TrendingUp,
