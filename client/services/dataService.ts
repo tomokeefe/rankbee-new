@@ -161,3 +161,16 @@ function getCategoryName(category: string): string {
   };
   return names[category] || category;
 }
+
+// Export function for AI components
+export function getMockMetrics(brand: string, timeframe: string) {
+  const filters: FilterState = {
+    brand,
+    category: "",
+    attributes: [],
+    dateRange: null,
+    timeframe
+  };
+
+  return getFilteredData(filters);
+}
