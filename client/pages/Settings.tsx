@@ -128,18 +128,19 @@ export default function Settings() {
   };
 
   const handleAddBrand = () => {
-    if (newBrand.name && newBrand.category) {
+    if (newBrand.name && newBrand.url && newBrand.category) {
       const brand: Brand = {
         id: Date.now().toString(),
         name: newBrand.name,
+        url: newBrand.url,
         category: newBrand.category,
         description: newBrand.description,
         status: "active",
         addedDate: new Date().toISOString().split('T')[0]
       };
-      
+
       setBrands([...brands, brand]);
-      setNewBrand({ name: "", category: "", description: "" });
+      setNewBrand({ name: "", url: "", category: "", description: "" });
       setIsAddingBrand(false);
     }
   };
