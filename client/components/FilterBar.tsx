@@ -69,8 +69,8 @@ export function FilterBar() {
   };
 
   const clearFilters = () => {
-    updateFilter("category", []);
-    updateFilter("subcategory", []);
+    updateFilter("category", "");
+    updateFilter("subcategory", "");
     updateFilter("priceRange", "");
     updateFilter("attributes", []);
   };
