@@ -230,7 +230,7 @@ export function Header() {
                       </CardHeader>
                       <CardContent className="pt-0">
                         <p className="text-sm text-gray-600">Chat with our support team in real-time.</p>
-                        <p className="text-xs text-green-600 mt-1">��� Available now</p>
+                        <p className="text-xs text-green-600 mt-1">• Available now</p>
                       </CardContent>
                     </Card>
                     
@@ -362,21 +362,129 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer" onClick={() => setProfileOpen(true)}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                  <Link to="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-red-600">
+                <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Profile Dialog */}
+            <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-[#9369F6]" />
+                    Profile Information
+                  </DialogTitle>
+                  <DialogDescription>
+                    View and manage your account information.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6 py-4">
+                  {/* Profile Picture Section */}
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20">
+                      <AvatarImage
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face"
+                        alt="Profile"
+                      />
+                      <AvatarFallback className="bg-purple-600 text-white text-lg font-bold">
+                        TO
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="text-lg font-semibold">Tom O'Keefe</h3>
+                      <p className="text-sm text-gray-600">Account Administrator</p>
+                      <Button variant="outline" size="sm" className="mt-2">
+                        Change Photo
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Account Information */}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Full Name</Label>
+                        <p className="text-sm text-gray-900 mt-1">Tom O'Keefe</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Email</Label>
+                        <p className="text-sm text-gray-900 mt-1">tom@growcreate.com</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Role</Label>
+                        <p className="text-sm text-gray-900 mt-1">Administrator</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Company</Label>
+                        <p className="text-sm text-gray-900 mt-1">GrowCreate</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Member Since</Label>
+                        <p className="text-sm text-gray-900 mt-1">January 2025</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700">Last Login</Label>
+                        <p className="text-sm text-gray-900 mt-1">Today at 2:30 PM</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Account Statistics */}
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Account Activity</h4>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-lg font-bold text-[#9369F6]">3</p>
+                        <p className="text-xs text-gray-600">Brands Connected</p>
+                      </div>
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-lg font-bold text-[#9369F6]">147</p>
+                        <p className="text-xs text-gray-600">Reports Generated</p>
+                      </div>
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-lg font-bold text-[#9369F6]">24</p>
+                        <p className="text-xs text-gray-600">Days Active</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setProfileOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="flex-1 bg-[#9369F6] hover:bg-[#7C3AED] text-white"
+                    onClick={() => {
+                      setProfileOpen(false);
+                      // In a real app, this would navigate to an edit profile page
+                      alert("Edit Profile functionality would be implemented here.");
+                    }}
+                  >
+                    Edit Profile
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
