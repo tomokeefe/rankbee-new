@@ -49,25 +49,25 @@ function HorizontalBar({ data, title }: HorizontalBarProps) {
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {data.map((item, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-foreground">{item.name}</span>
-                <div className="flex items-center gap-4">
-                  <span className="text-muted-foreground">
+            <div key={index} className="space-y-3">
+              <div className="flex items-start justify-between text-sm">
+                <span className="font-medium text-foreground flex-1 pr-2">{item.name}</span>
+                <div className="flex flex-col items-end gap-1 min-w-0">
+                  <span className="text-muted-foreground whitespace-nowrap text-xs">
                     Avg Rank: {item.avgRank}
                   </span>
                   <div
                     className={cn(
-                      "flex items-center gap-1",
+                      "flex items-center gap-1 whitespace-nowrap",
                       item.change > 0 ? "text-green-600" : "text-red-600",
                     )}
                   >
                     {item.change > 0 ? (
-                      <ArrowUp className="h-3 w-3" />
+                      <ArrowUp className="h-3 w-3 flex-shrink-0" />
                     ) : (
-                      <ArrowDown className="h-3 w-3" />
+                      <ArrowDown className="h-3 w-3 flex-shrink-0" />
                     )}
                     <span className="text-xs">{Math.abs(item.change)}%</span>
                   </div>
@@ -80,7 +80,7 @@ function HorizontalBar({ data, title }: HorizontalBarProps) {
                     style={{ width: `${item.coverage}%` }}
                   />
                 </div>
-                <span className="absolute right-0 -top-5 text-xs text-muted-foreground">
+                <span className="absolute right-0 -top-6 text-xs text-muted-foreground">
                   {item.coverage}%
                 </span>
               </div>
