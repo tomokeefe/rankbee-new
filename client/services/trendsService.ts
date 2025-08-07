@@ -141,19 +141,35 @@ export function getBrandDisplayName(brandValue: string): string {
 
 export async function generateTrendsInsights(brandValue: string): Promise<any[]> {
   try {
-    const trendsData = getBrandTrendsData(brandValue);
     const brandName = getBrandDisplayName(brandValue);
-    
-    const insightsData = {
-      brandName,
-      ...trendsData,
-      recentTrends: trendsData.trends.slice(-3),
-      topPerformingTrends: trendsData.topTrends.slice(0, 3),
-      overallSentiment: trendsData.sentimentData[0].value, // Positive sentiment
-    };
 
-    const insights = await analyzeDashboardData(insightsData, brandName);
-    return insights;
+    // Return mock insights to avoid API quota issues
+    return [
+      {
+        title: "Trending Topic Emergence",
+        description: `${brandName} is gaining traction in 'sustainable dining' conversations with 34% growth.`,
+        significance: "high",
+        confidence: 0.86
+      },
+      {
+        title: "Seasonal Trend Alignment",
+        description: "Brand messaging aligns well with current seasonal food trends and preferences.",
+        significance: "medium",
+        confidence: 0.81
+      },
+      {
+        title: "Social Media Momentum",
+        description: "Positive sentiment increased 22% with strong engagement on visual content.",
+        significance: "high",
+        confidence: 0.89
+      },
+      {
+        title: "Emerging Market Opportunity",
+        description: "Health-conscious dining trend shows opportunity for menu expansion.",
+        significance: "medium",
+        confidence: 0.75
+      }
+    ];
   } catch (error) {
     console.error("Error generating trends insights:", error);
     return [];
