@@ -1,12 +1,14 @@
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
-import { getFilteredData } from "../services/dataService";
+import { getBrandVisibilityData, generateVisibilityInsights, getBrandDisplayName } from "../services/visibilityService";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import {
@@ -16,6 +18,8 @@ import {
   TrendingUp,
   Target,
   Globe,
+  Brain,
+  Sparkles,
 } from "lucide-react";
 import {
   LineChart,
@@ -34,60 +38,86 @@ import {
   Cell,
 } from "recharts";
 
-const visibilityTrends = [
-  { month: "Jan", visibility: 65, impressions: 12500, clicks: 850 },
-  { month: "Feb", visibility: 68, impressions: 13200, clicks: 920 },
-  { month: "Mar", visibility: 72, impressions: 14100, clicks: 1020 },
-  { month: "Apr", visibility: 75, impressions: 15800, clicks: 1150 },
-  { month: "May", visibility: 78, impressions: 16900, clicks: 1280 },
-  { month: "Jun", visibility: 82, impressions: 18200, clicks: 1450 },
-];
-
-const platformData = [
-  { platform: "Google Search", visibility: 85, color: "#4285f4" },
-  { platform: "Bing", visibility: 62, color: "#00809d" },
-  { platform: "YouTube", visibility: 78, color: "#ff0000" },
-  { platform: "Google Maps", visibility: 91, color: "#34a853" },
-  { platform: "Social Media", visibility: 55, color: "#1da1f2" },
-];
-
-const competitorData = [
-  { name: "Your Brand", visibility: 82, rank: 1, change: +5 },
-  { name: "Competitor A", visibility: 79, rank: 2, change: -2 },
-  { name: "Competitor B", visibility: 76, rank: 3, change: +1 },
-  { name: "Competitor C", visibility: 71, rank: 4, change: -3 },
-  { name: "Competitor D", visibility: 68, rank: 5, change: +2 },
-];
-
-const keywordCategories = [
-  { category: "Brand Terms", visibility: 95, keywords: 245, avgPosition: 1.2 },
-  {
-    category: "Product Terms",
-    visibility: 78,
-    keywords: 1580,
-    avgPosition: 2.8,
-  },
-  {
-    category: "Category Terms",
-    visibility: 62,
-    keywords: 890,
-    avgPosition: 4.1,
-  },
-  {
-    category: "Competitor Terms",
-    visibility: 45,
-    keywords: 320,
-    avgPosition: 6.2,
-  },
-];
-
 export default function Visibility() {
-  const { filters } = useFilters();
-  const data = getFilteredData(filters);
+  const { filters, brands } = useFilters();
+  const [aiInsights, setAiInsights] = useState<any[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+
+  const visibilityData = getBrandVisibilityData(filters.brand);
+  const brandName = getBrandDisplayName(filters.brand);
+
+  useEffect(() => {
+    loadAIInsights();
+  }, [filters.brand]);
+
+  const loadAIInsights = async () => {
+    setIsLoadingInsights(true);
+    try {
+      const insights = await generateVisibilityInsights(filters.brand);
+      setAiInsights(insights);
+    } catch (error) {
+      console.error("Error loading AI insights:", error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
 
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#384255]">Visibility Analysis</h1>
+            <p className="text-gray-600">Search visibility gaps for {brandName}</p>
+          </div>
+          <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
+            <Brain className="h-4 w-4 mr-2" />
+            {isLoadingInsights ? "Generating..." : "Refresh AI Insights"}
+          </Button>
+        </div>
+
+        {/* AI Insights Panel */}
+        {aiInsights.length > 0 && (
+          <Card className="border-l-4 border-l-[#9369F6]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#9369F6]" />
+                AI-Powered Visibility Insights for {brandName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {aiInsights.slice(0, 4).map((insight, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg border border-[#9369F6]/20 bg-[#9369F6]/5"
+                  >
+                    <h4 className="font-semibold text-sm text-[#384255] mb-2">
+                      {insight.title}
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-2">
+                      {insight.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <Badge variant="outline" className="text-xs">
+                        {Math.round(insight.confidence * 100)}% confidence
+                      </Badge>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        insight.significance === 'high' ? 'bg-red-100 text-red-800' :
+                        insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {insight.significance} priority
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -98,7 +128,7 @@ export default function Visibility() {
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">82%</div>
+              <div className="text-2xl font-bold">{visibilityData.overallVisibility}%</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 +5.2% from last month
@@ -114,7 +144,7 @@ export default function Visibility() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">18.2K</div>
+              <div className="text-2xl font-bold">{(visibilityData.searchImpressions / 1000).toFixed(1)}K</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 +12.3% from last month
@@ -130,7 +160,7 @@ export default function Visibility() {
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">7.8%</div>
+              <div className="text-2xl font-bold">{visibilityData.clickThroughRate}%</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 +0.8% from last month
@@ -146,7 +176,7 @@ export default function Visibility() {
               <Globe className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24.5%</div>
+              <div className="text-2xl font-bold">{visibilityData.marketShare}%</div>
               <div className="flex items-center text-xs text-red-600">
                 <ArrowDown className="h-3 w-3 mr-1" />
                 -1.2% from last month
@@ -158,12 +188,12 @@ export default function Visibility() {
         {/* Visibility Trends Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Visibility Trends Over Time</CardTitle>
+            <CardTitle>Visibility Trends Over Time for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={visibilityTrends}>
+                <AreaChart data={visibilityData.trends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="month"
@@ -218,11 +248,11 @@ export default function Visibility() {
           {/* Platform Performance */}
           <Card>
             <CardHeader>
-              <CardTitle>Platform Performance</CardTitle>
+              <CardTitle>Platform Performance for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {platformData.map((platform) => (
+                {visibilityData.platforms.map((platform) => (
                   <div
                     key={platform.platform}
                     className="flex items-center justify-between"
@@ -255,17 +285,29 @@ export default function Visibility() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {competitorData.map((competitor, index) => (
+                {visibilityData.competitors.map((competitor, index) => (
                   <div
                     key={competitor.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
+                    className={`flex items-center justify-between p-3 rounded-lg ${
+                      competitor.name === "Your Brand" 
+                        ? "bg-[#9369F6]/10 border border-[#9369F6]/30" 
+                        : "bg-gray-50"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-600">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        competitor.name === "Your Brand"
+                          ? "bg-[#9369F6] text-white"
+                          : "bg-purple-100 text-purple-600"
+                      }`}>
                         {competitor.rank}
                       </div>
                       <div>
-                        <div className="font-medium">{competitor.name}</div>
+                        <div className={`font-medium ${
+                          competitor.name === "Your Brand" ? "text-[#9369F6]" : ""
+                        }`}>
+                          {competitor.name === "Your Brand" ? brandName : competitor.name}
+                        </div>
                         <div className="text-sm text-gray-600">
                           {competitor.visibility}% visibility
                         </div>
@@ -294,11 +336,11 @@ export default function Visibility() {
         {/* Keyword Categories Performance */}
         <Card>
           <CardHeader>
-            <CardTitle>Keyword Category Performance</CardTitle>
+            <CardTitle>Keyword Category Performance for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {keywordCategories.map((category) => (
+              {visibilityData.keywordCategories.map((category) => (
                 <div key={category.category} className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium">{category.category}</h4>
