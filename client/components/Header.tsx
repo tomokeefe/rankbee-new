@@ -66,11 +66,11 @@ export function Header() {
 
               {/* Brand Dropdown */}
               <Select value={filters.brand} onValueChange={handleBrandChange}>
-                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative [&>svg]:hidden">
+                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative [&>svg]:hidden hover:border-[#9369F6] hover:shadow-md transition-all duration-200 focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 data-[state=open]:border-[#9369F6] data-[state=open]:ring-2 data-[state=open]:ring-[#9369F6]/20">
                   <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px]">
                     {displayName}
                   </SelectValue>
-                  <svg className="absolute right-[33px] h-4 w-4 opacity-50" width="10" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="absolute right-[33px] h-4 w-4 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" width="10" height="6" viewBox="0 0 11 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path opacity="0.6" d="M5.05078 5.51282L0 0.487305H10.1016L5.05078 5.51282Z" fill="black"/>
                   </svg>
                 </SelectTrigger>
