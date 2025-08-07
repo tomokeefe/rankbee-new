@@ -96,14 +96,14 @@ export function FilterBar() {
               Category
             </label>
             <Select
-              value={filters.category?.[0] || ""}
+              value={(filters.category && filters.category.length > 0) ? filters.category[0] : ""}
               onValueChange={handleCategoryChange}
             >
               <SelectTrigger
                 className={cn(
                   "h-9 text-sm border border-gray-300 bg-white",
                   "hover:bg-gray-50 hover:border-gray-400",
-                  filters.category && filters.category.length > 0 && "border-purple-600 bg-purple-50",
+                  (filters.category && filters.category.length > 0) && "border-purple-600 bg-purple-50",
                 )}
               >
                 <SelectValue placeholder="Select" />
