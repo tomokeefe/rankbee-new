@@ -75,12 +75,34 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
   const [subcategoryPopoverOpen, setSubcategoryPopoverOpen] = useState(false);
 
-  const handleCategoryChange = (value: string) => {
-    updateFilter("category", value);
+  const handleCategoryToggle = (category: string) => {
+    if (category === "All Categories") {
+      const newCategories: string[] = [];
+      setSelectedCategories(newCategories);
+      updateFilter("category", newCategories);
+      return;
+    }
+
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+    setSelectedCategories(newCategories);
+    updateFilter("category", newCategories);
   };
 
-  const handleSubcategoryChange = (value: string) => {
-    updateFilter("subcategory", value);
+  const handleSubcategoryToggle = (subcategory: string) => {
+    if (subcategory === "All Subcategories") {
+      const newSubcategories: string[] = [];
+      setSelectedSubcategories(newSubcategories);
+      updateFilter("subcategory", newSubcategories);
+      return;
+    }
+
+    const newSubcategories = selectedSubcategories.includes(subcategory)
+      ? selectedSubcategories.filter(s => s !== subcategory)
+      : [...selectedSubcategories, subcategory];
+    setSelectedSubcategories(newSubcategories);
+    updateFilter("subcategory", newSubcategories);
   };
 
   const handleDateRangeChange = (range: { from: Date | undefined; to: Date | undefined }) => {
