@@ -1,12 +1,14 @@
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
-import { getFilteredData } from "../services/dataService";
+import { getBrandTrendsData, generateTrendsInsights, getBrandDisplayName } from "../services/trendsService";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import {
   ArrowUp,
@@ -15,6 +17,8 @@ import {
   Calendar,
   Users,
   Globe,
+  Brain,
+  Sparkles,
 } from "lucide-react";
 import {
   LineChart,
@@ -33,44 +37,86 @@ import {
   Cell,
 } from "recharts";
 
-const trendData = [
-  { month: "Jan", engagement: 65, searches: 12500, mentions: 850, sentiment: 72 },
-  { month: "Feb", engagement: 68, searches: 13200, mentions: 920, sentiment: 74 },
-  { month: "Mar", engagement: 72, searches: 14100, mentions: 1020, sentiment: 76 },
-  { month: "Apr", engagement: 75, searches: 15800, mentions: 1150, sentiment: 78 },
-  { month: "May", engagement: 78, searches: 16900, mentions: 1280, sentiment: 80 },
-  { month: "Jun", engagement: 82, searches: 18200, mentions: 1450, sentiment: 82 },
-];
-
-const topTrends = [
-  { trend: "Plant-based menu items", growth: +45, category: "Menu Innovation" },
-  { trend: "Outdoor dining experiences", growth: +38, category: "Dining Experience" },
-  { trend: "Local sourcing", growth: +32, category: "Sustainability" },
-  { trend: "Family meal deals", growth: +28, category: "Value Offerings" },
-  { trend: "Contactless ordering", growth: +25, category: "Technology" },
-];
-
-const sentimentData = [
-  { name: "Positive", value: 65, color: "#22c55e" },
-  { name: "Neutral", value: 25, color: "#6b7280" },
-  { name: "Negative", value: 10, color: "#ef4444" },
-];
-
-const emergingKeywords = [
-  { keyword: "authentic Italian", searches: 24500, change: +18 },
-  { keyword: "family friendly", searches: 18200, change: +22 },
-  { keyword: "fresh ingredients", searches: 15800, change: +15 },
-  { keyword: "cozy atmosphere", searches: 12400, change: +12 },
-  { keyword: "date night", searches: 11200, change: +8 },
-];
-
 export default function Trends() {
-  const { filters } = useFilters();
-  const data = getFilteredData(filters);
+  const { filters, brands } = useFilters();
+  const [aiInsights, setAiInsights] = useState<any[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+
+  const trendsData = getBrandTrendsData(filters.brand);
+  const brandName = getBrandDisplayName(filters.brand);
+
+  useEffect(() => {
+    loadAIInsights();
+  }, [filters.brand]);
+
+  const loadAIInsights = async () => {
+    setIsLoadingInsights(true);
+    try {
+      const insights = await generateTrendsInsights(filters.brand);
+      setAiInsights(insights);
+    } catch (error) {
+      console.error("Error loading AI insights:", error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
 
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#384255]">Trends Analysis</h1>
+            <p className="text-gray-600">Market trends and insights for {brandName}</p>
+          </div>
+          <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
+            <Brain className="h-4 w-4 mr-2" />
+            {isLoadingInsights ? "Generating..." : "Refresh AI Insights"}
+          </Button>
+        </div>
+
+        {/* AI Insights Panel */}
+        {aiInsights.length > 0 && (
+          <Card className="border-l-4 border-l-[#9369F6]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#9369F6]" />
+                AI-Powered Trends Insights for {brandName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {aiInsights.slice(0, 4).map((insight, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg border border-[#9369F6]/20 bg-[#9369F6]/5"
+                  >
+                    <h4 className="font-semibold text-sm text-[#384255] mb-2">
+                      {insight.title}
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-2">
+                      {insight.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <Badge variant="outline" className="text-xs">
+                        {Math.round(insight.confidence * 100)}% confidence
+                      </Badge>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        insight.significance === 'high' ? 'bg-red-100 text-red-800' :
+                        insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {insight.significance} priority
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -81,7 +127,7 @@ export default function Trends() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8.2/10</div>
+              <div className="text-2xl font-bold">{trendsData.trendingScore}/10</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 +1.2 from last month
@@ -97,7 +143,7 @@ export default function Trends() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+18%</div>
+              <div className="text-2xl font-bold">+{trendsData.trendVelocity}%</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 Accelerating trend growth
@@ -113,7 +159,7 @@ export default function Trends() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">24.5K</div>
+              <div className="text-2xl font-bold">{(trendsData.audienceGrowth / 1000).toFixed(1)}K</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 +12% new followers
@@ -129,7 +175,7 @@ export default function Trends() {
               <Globe className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">#2</div>
+              <div className="text-2xl font-bold">#{trendsData.marketPosition}</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
                 Up 2 positions
@@ -141,12 +187,12 @@ export default function Trends() {
         {/* Trend Analysis Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Trend Analysis Over Time</CardTitle>
+            <CardTitle>Trend Analysis Over Time for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trendData}>
+                <AreaChart data={trendsData.trends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="month"
@@ -189,11 +235,11 @@ export default function Trends() {
           {/* Top Trending Topics */}
           <Card>
             <CardHeader>
-              <CardTitle>Top Trending Topics</CardTitle>
+              <CardTitle>Top Trending Topics for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {topTrends.map((trend, index) => (
+                {trendsData.topTrends.map((trend, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
@@ -224,20 +270,20 @@ export default function Trends() {
           {/* Sentiment Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>Sentiment Distribution</CardTitle>
+              <CardTitle>Sentiment Distribution for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={sentimentData}
+                      data={trendsData.sentimentData}
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
                       dataKey="value"
                     >
-                      {sentimentData.map((entry, index) => (
+                      {trendsData.sentimentData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -246,7 +292,7 @@ export default function Trends() {
                 </ResponsiveContainer>
               </div>
               <div className="flex justify-center gap-4 mt-4">
-                {sentimentData.map((item) => (
+                {trendsData.sentimentData.map((item) => (
                   <div key={item.name} className="flex items-center gap-2">
                     <div
                       className="w-3 h-3 rounded-full"
@@ -265,11 +311,11 @@ export default function Trends() {
         {/* Emerging Keywords */}
         <Card>
           <CardHeader>
-            <CardTitle>Emerging Keywords</CardTitle>
+            <CardTitle>Emerging Keywords for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              {emergingKeywords.map((keyword, index) => (
+              {trendsData.emergingKeywords.map((keyword, index) => (
                 <div key={index} className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">{keyword.keyword}</h4>
