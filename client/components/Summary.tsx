@@ -34,6 +34,8 @@ export function Summary() {
   const { filters } = useFilters();
   const [aiInsights, setAiInsights] = useState<AISummaryInsight[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     generateAISummary();
