@@ -5,7 +5,6 @@ import { TimeSeriesChart } from "../components/TimeSeriesChart";
 import { BreakdownCharts } from "../components/BreakdownCharts";
 import { Top10Brands } from "../components/Top10Brands";
 import { CitationsTable } from "../components/DataTable";
-import { DebugFilter } from "../components/DebugFilter";
 import { useFilters } from "../contexts/FilterContext";
 
 export default function Index() {
