@@ -36,29 +36,29 @@ export function Header() {
   return (
     <>
       <header className="bg-white h-[90px] shadow-md sticky top-0 z-40">
-        <div className="flex h-full items-center px-5 gap-9">
-          {/* Left side - Logo and Brand */}
-          <div className="flex items-center gap-[280px]">
-            <div className="flex items-center gap-[25px]">
-              {/* Logo */}
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/1aaf17a846b7f6d27c800bb71697497d6f50202a?width=158"
-                alt="RankBee Logo"
-                className="w-[79px] h-[61px]"
-              />
+        <div className="flex h-full items-center px-5">
+          {/* Left side - Logo and Company */}
+          <div className="flex items-center gap-[25px] flex-shrink-0">
+            {/* Logo */}
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/1aaf17a846b7f6d27c800bb71697497d6f50202a?width=158"
+              alt="RankBee Logo"
+              className="w-[79px] h-[61px]"
+            />
 
-              {/* Divider */}
-              <div className="w-px h-[62px] bg-black opacity-20" />
+            {/* Divider */}
+            <div className="w-px h-[62px] bg-black opacity-20" />
 
-              {/* Company Name */}
-              <div className="w-[132px] h-[38px]">
-                <span className="text-black font-bold text-[22px] leading-[38px] font-sans">
-                  GrowCreate
-                </span>
-              </div>
+            {/* Company Name */}
+            <div className="w-[132px] h-[38px]">
+              <span className="text-black font-bold text-[22px] leading-[38px] font-sans">
+                GrowCreate
+              </span>
             </div>
+          </div>
 
-            {/* Brand Selector and Filter */}
+          {/* Center - Brand Selector */}
+          <div className="flex-1 flex justify-center">
             <div className="flex items-center gap-[13px]">
               <span className="text-[#18181B] font-bold text-[17px] leading-5 opacity-60 font-sans">
                 Brand:
