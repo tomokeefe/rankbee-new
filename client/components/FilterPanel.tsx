@@ -59,6 +59,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     to: undefined,
   });
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState("ChatGPT");
 
   const handleCategoryChange = (value: string) => {
     updateFilter("category", value);
