@@ -114,12 +114,12 @@ export function Header() {
                   </svg>
                 </SelectTrigger>
                 <SelectContent className="min-w-[311px]">
-                  {brands.map((brand) => {
+                  {activeBrands.map((brand) => {
                     const isSelected = filters.brand === brand.value;
                     return (
                       <SelectItem
                         key={brand.value}
-                        value={brand.value}
+                        value={brand.value!}
                         className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
                       >
                         <div className="flex items-center gap-3 w-full">
