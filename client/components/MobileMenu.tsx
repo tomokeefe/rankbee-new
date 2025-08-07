@@ -151,12 +151,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="h-4 w-4" />
-                Advanced Filters
+                {showFilters ? "Hide Filters" : "Show Filters"}
               </Button>
 
               {/* Advanced Filter Panel */}
               {showFilters && (
-                <div className="relative">
+                <div className="border rounded-lg bg-white shadow-sm p-4">
                   <FilterPanel onClose={() => setShowFilters(false)} />
                 </div>
               )}
