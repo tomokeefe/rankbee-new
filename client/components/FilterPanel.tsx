@@ -71,8 +71,26 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   });
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("ChatGPT");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => filters.category || []);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(() => filters.subcategory || []);
+
+  // Safe initialization with error handling
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    try {
+      return (filters?.category && Array.isArray(filters.category)) ? filters.category : [];
+    } catch (error) {
+      console.warn("Error initializing selectedCategories:", error);
+      return [];
+    }
+  });
+
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(() => {
+    try {
+      return (filters?.subcategory && Array.isArray(filters.subcategory)) ? filters.subcategory : [];
+    } catch (error) {
+      console.warn("Error initializing selectedSubcategories:", error);
+      return [];
+    }
+  });
+
   const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
   const [subcategoryPopoverOpen, setSubcategoryPopoverOpen] = useState(false);
 
