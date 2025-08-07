@@ -1,7 +1,8 @@
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
+import {
   BarChart3,
+  TrendingUp,
   TrendingDown,
   MessageSquare,
   FileText
