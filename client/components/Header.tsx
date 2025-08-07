@@ -70,6 +70,13 @@ export function Header() {
     alert("Thank you for your message! We'll get back to you soon.");
   };
 
+  const handleLogout = () => {
+    // Here you would typically handle logout logic (clear auth tokens, etc.)
+    console.log("Logging out...");
+    alert("You have been logged out successfully.");
+    // In a real app, you would redirect to login page or clear authentication state
+  };
+
   const selectedBrand = brands.find((brand) => brand.value === filters.brand);
   const displayName = selectedBrand?.label || "Olive Garden";
 
@@ -223,7 +230,7 @@ export function Header() {
                       </CardHeader>
                       <CardContent className="pt-0">
                         <p className="text-sm text-gray-600">Chat with our support team in real-time.</p>
-                        <p className="text-xs text-green-600 mt-1">• Available now</p>
+                        <p className="text-xs text-green-600 mt-1">��� Available now</p>
                       </CardContent>
                     </Card>
                     
