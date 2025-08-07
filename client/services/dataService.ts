@@ -231,26 +231,6 @@ export function getGlobalBrandsData(filters?: FilterState) {
 
 // Apply filters to data
 export function getFilteredData(filters: FilterState) {
-  // Safety check - ensure filters is defined and has the expected structure
-  if (!filters) {
-    console.warn("getFilteredData called with undefined filters, using defaults");
-    filters = {
-      brand: "olive-garden",
-      category: [],
-      subcategory: [],
-      attributes: [],
-      dateRange: null
-    };
-  }
-
-  // Ensure category and subcategory are arrays
-  if (!Array.isArray(filters.category)) {
-    filters.category = filters.category ? [filters.category as any] : [];
-  }
-  if (!Array.isArray(filters.subcategory)) {
-    filters.subcategory = filters.subcategory ? [filters.subcategory as any] : [];
-  }
-
   // Create filtered data based on filters
   let filteredData = JSON.parse(JSON.stringify(baseData)); // Deep clone
 
