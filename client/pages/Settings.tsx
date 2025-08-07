@@ -107,6 +107,7 @@ export default function Settings() {
   
   const [newBrand, setNewBrand] = useState({
     name: "",
+    url: "",
     category: "",
     description: ""
   });
