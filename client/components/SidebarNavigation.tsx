@@ -5,7 +5,8 @@ import {
   TrendingUp,
   TrendingDown,
   MessageSquare,
-  FileText
+  FileText,
+  Settings
 } from "lucide-react";
 
 const navItems = [
