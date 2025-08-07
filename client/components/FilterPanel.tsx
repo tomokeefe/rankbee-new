@@ -210,21 +210,65 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
               </Popover>
             </div>
 
-            {/* Category Filter */}
+            {/* Category Filter - Multi-select */}
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#384255]">Category</label>
-              <Select value={filters.category || "All Categories"} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((category) => (
-                    <SelectItem key={category} value={category} className="py-2">
+              <label className="text-sm font-semibold text-[#384255]">Category (Multi-select)</label>
+              <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between h-10 border-gray-300 hover:border-[#9369F6] focus:border-[#9369F6] focus:ring-2 focus:ring-[#9369F6]/20 text-left"
+                  >
+                    <span className="truncate">
+                      {selectedCategories.length === 0
+                        ? "Select categories"
+                        : selectedCategories.length === 1
+                        ? selectedCategories[0]
+                        : `${selectedCategories.length} categories selected`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[360px] p-0" align="start">
+                  <div className="max-h-64 overflow-y-auto">
+                    {categoryOptions.map((category) => (
+                      <div
+                        key={category}
+                        className="flex items-center space-x-2 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleCategoryToggle(category)}
+                      >
+                        <Checkbox
+                          checked={category === "All Categories" ? selectedCategories.length === 0 : selectedCategories.includes(category)}
+                          className="data-[state=checked]:bg-[#9369F6] data-[state=checked]:border-[#9369F6]"
+                        />
+                        <label className="text-sm font-medium cursor-pointer flex-1">
+                          {category}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedCategories.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedCategories.map((category) => (
+                    <Badge
+                      key={category}
+                      variant="secondary"
+                      className="text-xs bg-[#9369F6]/10 text-[#9369F6] border-[#9369F6]/20"
+                    >
                       {category}
-                    </SelectItem>
+                      <X
+                        className="h-3 w-3 ml-1 cursor-pointer hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryToggle(category);
+                        }}
+                      />
+                    </Badge>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
             </div>
 
             {/* Subcategory Filter */}
