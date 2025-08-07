@@ -31,7 +31,7 @@ export function Header() {
   };
 
   const selectedBrand = brands.find((brand) => brand.value === filters.brand);
-  const displayName = selectedBrand?.label || "Select Brand";
+  const displayName = selectedBrand?.label || "Olive Garden";
 
   return (
     <>
