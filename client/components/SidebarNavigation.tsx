@@ -14,6 +14,11 @@ const navItems = [
     icon: BarChart3
   },
   {
+    name: "Trends",
+    href: "/trends",
+    icon: TrendingUp
+  },
+  {
     name: "Gaps",
     href: "/visibility",
     icon: TrendingDown
