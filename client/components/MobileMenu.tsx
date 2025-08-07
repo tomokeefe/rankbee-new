@@ -22,6 +22,130 @@ import {
 } from "./ui/select";
 import { FilterPanel } from "./FilterPanel";
 
+// Mobile-specific filter panel component
+function MobileFilterPanel({ onClose }: { onClose: () => void }) {
+  const { filters, updateFilter } = useFilters();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    Array.isArray(filters.category) ? filters.category : filters.category ? [filters.category] : []
+  );
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(
+    Array.isArray(filters.subcategory) ? filters.subcategory : filters.subcategory ? [filters.subcategory] : []
+  );
+
+  // Sample data
+  const categoryOptions = [
+    "All Categories",
+    "Italian Restaurant",
+    "Casual Dining",
+    "Family Restaurant",
+    "Chain Restaurant",
+    "Fine Dining",
+    "Fast Casual",
+  ];
+
+  const subcategoryOptions = [
+    "All Subcategories",
+    "Traditional Italian",
+    "Modern Italian",
+    "Pizza & Pasta",
+    "Wine & Dine",
+    "Family Style",
+    "Corporate Dining",
+  ];
+
+  const handleCategoryToggle = (category: string) => {
+    if (category === "All Categories") {
+      const newCategories: string[] = [];
+      setSelectedCategories(newCategories);
+      updateFilter("category", newCategories);
+      return;
+    }
+
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+
+    setSelectedCategories(newCategories);
+    updateFilter("category", newCategories);
+  };
+
+  const handleSubcategoryToggle = (subcategory: string) => {
+    if (subcategory === "All Subcategories") {
+      const newSubcategories: string[] = [];
+      setSelectedSubcategories(newSubcategories);
+      updateFilter("subcategory", newSubcategories);
+      return;
+    }
+
+    const newSubcategories = selectedSubcategories.includes(subcategory)
+      ? selectedSubcategories.filter(s => s !== subcategory)
+      : [...selectedSubcategories, subcategory];
+
+    setSelectedSubcategories(newSubcategories);
+    updateFilter("subcategory", newSubcategories);
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Categories */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Categories</label>
+        <div className="space-y-2">
+          {categoryOptions.map((category) => (
+            <div key={category} className="flex items-center space-x-2">
+              <Checkbox
+                id={`mobile-category-${category}`}
+                checked={category === "All Categories" ? selectedCategories.length === 0 : selectedCategories.includes(category)}
+                onCheckedChange={() => handleCategoryToggle(category)}
+              />
+              <label
+                htmlFor={`mobile-category-${category}`}
+                className="text-sm text-gray-700 cursor-pointer"
+              >
+                {category}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Subcategories */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Subcategories</label>
+        <div className="space-y-2">
+          {subcategoryOptions.map((subcategory) => (
+            <div key={subcategory} className="flex items-center space-x-2">
+              <Checkbox
+                id={`mobile-subcategory-${subcategory}`}
+                checked={subcategory === "All Subcategories" ? selectedSubcategories.length === 0 : selectedSubcategories.includes(subcategory)}
+                onCheckedChange={() => handleSubcategoryToggle(subcategory)}
+              />
+              <label
+                htmlFor={`mobile-subcategory-${subcategory}`}
+                className="text-sm text-gray-700 cursor-pointer"
+              >
+                {subcategory}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Close Button */}
+      <div className="pt-2 border-t">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onClose}
+          className="w-full"
+        >
+          Apply Filters
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 const navItems = [
   {
     name: "Snapshot",
