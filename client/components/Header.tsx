@@ -35,8 +35,8 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-white h-[90px] shadow-md">
-        <div className="flex h-full items-center px-5 pl-[282px] gap-9">
+      <header className="bg-white h-[90px] shadow-md relative z-40">
+        <div className="flex h-full items-center px-5 gap-9">
           {/* Left side - Logo and Brand */}
           <div className="flex items-center gap-[208px]">
             <div className="flex items-center gap-[25px]">
