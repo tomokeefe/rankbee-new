@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
-import { getFilteredData } from "../services/dataService";
+import { getBrandCitationData, getBrandCitationTrends, generateCitationInsights, getBrandDisplayName } from "../services/citationService";
 import {
   Card,
   CardContent,
@@ -32,6 +32,8 @@ import {
   ArrowUp,
   ArrowDown,
   Calendar,
+  Brain,
+  Sparkles,
 } from "lucide-react";
 import {
   Select,
@@ -58,124 +60,6 @@ import {
   Cell,
 } from "recharts";
 
-// Extended citation data with more comprehensive information
-const citationData = [
-  {
-    id: "1",
-    domain: "tripadvisor.com",
-    url: "https://tripadvisor.com/restaurant/olive-garden-reviews",
-    title: "Olive Garden Italian Restaurant Reviews",
-    citations: 1247,
-    coverage: 23.4,
-    change: 1.8,
-    sentiment: "positive",
-    authority: 92,
-    traffic: 45600,
-    lastCrawled: new Date("2025-01-08T10:30:00"),
-    category: "Review Site",
-    status: "active",
-  },
-  {
-    id: "2",
-    domain: "yelp.com",
-    url: "https://yelp.com/biz/olive-garden-location",
-    title: "Olive Garden - Local Business Listing",
-    citations: 892,
-    coverage: 18.9,
-    change: -0.7,
-    sentiment: "neutral",
-    authority: 88,
-    traffic: 32100,
-    lastCrawled: new Date("2025-01-08T09:45:00"),
-    category: "Directory",
-    status: "active",
-  },
-  {
-    id: "3",
-    domain: "opentable.com",
-    url: "https://opentable.com/olive-garden-reservations",
-    title: "Make Reservations at Olive Garden",
-    citations: 634,
-    coverage: 12.3,
-    change: 0.3,
-    sentiment: "positive",
-    authority: 85,
-    traffic: 18900,
-    lastCrawled: new Date("2025-01-08T08:20:00"),
-    category: "Booking Platform",
-    status: "active",
-  },
-  {
-    id: "4",
-    domain: "zomato.com",
-    url: "https://zomato.com/olive-garden-menu-reviews",
-    title: "Olive Garden Menu, Reviews & Ratings",
-    citations: 421,
-    coverage: 8.1,
-    change: 2.2,
-    sentiment: "positive",
-    authority: 78,
-    traffic: 12500,
-    lastCrawled: new Date("2025-01-08T07:15:00"),
-    category: "Food Portal",
-    status: "active",
-  },
-  {
-    id: "5",
-    domain: "google.com",
-    url: "https://google.com/maps/place/olive-garden",
-    title: "Olive Garden Locations on Google Maps",
-    citations: 856,
-    coverage: 16.2,
-    change: 3.1,
-    sentiment: "neutral",
-    authority: 100,
-    traffic: 67800,
-    lastCrawled: new Date("2025-01-08T06:30:00"),
-    category: "Maps & Local",
-    status: "active",
-  },
-  {
-    id: "6",
-    domain: "foursquare.com",
-    url: "https://foursquare.com/venue/olive-garden",
-    title: "Olive Garden Venue Information",
-    citations: 234,
-    coverage: 4.7,
-    change: -1.2,
-    sentiment: "neutral",
-    authority: 72,
-    traffic: 8900,
-    lastCrawled: new Date("2025-01-08T05:45:00"),
-    category: "Social Platform",
-    status: "declining",
-  },
-  {
-    id: "7",
-    domain: "urbanspoon.com",
-    url: "https://urbanspoon.com/r/olive-garden",
-    title: "Olive Garden Restaurant Info",
-    citations: 145,
-    coverage: 2.9,
-    change: -3.4,
-    sentiment: "negative",
-    authority: 45,
-    traffic: 3200,
-    lastCrawled: new Date("2025-01-08T04:30:00"),
-    category: "Review Site",
-    status: "inactive",
-  },
-];
-
-const trendData = [
-  { month: "Jul", citations: 3890, coverage: 19.2, domains: 145 },
-  { month: "Aug", citations: 4120, coverage: 20.1, domains: 152 },
-  { month: "Sep", citations: 4380, coverage: 21.5, domains: 158 },
-  { month: "Oct", citations: 4650, coverage: 22.8, domains: 163 },
-  { month: "Nov", citations: 4890, coverage: 23.9, domains: 167 },
-  { month: "Dec", citations: 5140, coverage: 24.7, domains: 171 },
-];
-
 const categoryDistribution = [
   { name: "Review Sites", value: 35, color: "#8b5cf6" },
   { name: "Directories", value: 28, color: "#06b6d4" },
@@ -185,12 +69,35 @@ const categoryDistribution = [
 ];
 
 export default function CitationAnalysis() {
-  const { filters } = useFilters();
+  const { filters, brands } = useFilters();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [sortField, setSortField] = useState("citations");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [aiInsights, setAiInsights] = useState<any[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+
+  // Get brand-specific citation data
+  const citationData = getBrandCitationData(filters.brand);
+  const trendData = getBrandCitationTrends(filters.brand);
+  const brandName = getBrandDisplayName(filters.brand);
+
+  useEffect(() => {
+    loadAIInsights();
+  }, [filters.brand]);
+
+  const loadAIInsights = async () => {
+    setIsLoadingInsights(true);
+    try {
+      const insights = await generateCitationInsights(filters.brand);
+      setAiInsights(insights);
+    } catch (error) {
+      console.error("Error loading AI insights:", error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
 
   const filteredData = citationData.filter((item) => {
     if (
@@ -271,6 +178,59 @@ export default function CitationAnalysis() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#384255]">Citation Analysis</h1>
+            <p className="text-gray-600">Analyzing citations for {brandName}</p>
+          </div>
+          <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
+            <Brain className="h-4 w-4 mr-2" />
+            {isLoadingInsights ? "Generating..." : "Refresh AI Insights"}
+          </Button>
+        </div>
+
+        {/* AI Insights Panel */}
+        {aiInsights.length > 0 && (
+          <Card className="border-l-4 border-l-[#9369F6]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#9369F6]" />
+                AI-Powered Citation Insights for {brandName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {aiInsights.slice(0, 4).map((insight, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg border border-[#9369F6]/20 bg-[#9369F6]/5"
+                  >
+                    <h4 className="font-semibold text-sm text-[#384255] mb-2">
+                      {insight.title}
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-2">
+                      {insight.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <Badge variant="outline" className="text-xs">
+                        {Math.round(insight.confidence * 100)}% confidence
+                      </Badge>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        insight.significance === 'high' ? 'bg-red-100 text-red-800' :
+                        insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {insight.significance} priority
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -345,7 +305,7 @@ export default function CitationAnalysis() {
         {/* Citation Trends Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Citation Growth Trends</CardTitle>
+            <CardTitle>Citation Growth Trends for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -438,7 +398,7 @@ export default function CitationAnalysis() {
           {/* Top Performing Domains */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Top Performing Domains</CardTitle>
+              <CardTitle>Top Performing Domains for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -542,7 +502,7 @@ export default function CitationAnalysis() {
         <Card>
           <CardHeader>
             <CardTitle>
-              Citation Details ({sortedData.length} results)
+              {brandName} Citation Details ({sortedData.length} results)
             </CardTitle>
           </CardHeader>
           <CardContent>
