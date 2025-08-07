@@ -27,22 +27,34 @@ export default function Index() {
         </div>
 
         {/* KPI Cards */}
-        <KPICards />
+        <ErrorBoundary>
+          <KPICards />
+        </ErrorBoundary>
 
         {/* Summary */}
-        <Summary />
+        <ErrorBoundary>
+          <Summary />
+        </ErrorBoundary>
 
         {/* Top Brands Globally and Citation Analysis - moved above Time Series Chart */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <Top10Brands />
-          <CitationsTable />
+          <ErrorBoundary>
+            <Top10Brands />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <CitationsTable />
+          </ErrorBoundary>
         </div>
 
         {/* Brand Performance Over Time Chart */}
-        <TimeSeriesChart />
+        <ErrorBoundary>
+          <TimeSeriesChart />
+        </ErrorBoundary>
 
         {/* Breakdown Charts and Additional Components */}
-        <BreakdownCharts />
+        <ErrorBoundary>
+          <BreakdownCharts />
+        </ErrorBoundary>
       </div>
     </DashboardLayout>
   );
