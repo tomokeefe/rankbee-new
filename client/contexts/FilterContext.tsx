@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export interface DateRange {
-  from: Date;
-  to: Date;
+  from: Date | undefined;
+  to: Date | undefined;
 }
 
 export interface FilterState {
-  dateRange: DateRange;
+  dateRange?: DateRange | null;
   brand: string;
-  category: string;
-  subcategory: string;
-  priceRange: string;
-  attributes: string[];
+  category?: string;
+  subcategory?: string;
+  priceRange?: string;
+  attributes?: string[];
 }
 
 export interface FilterContextType {
@@ -24,13 +24,10 @@ export interface FilterContextType {
 }
 
 const defaultFilters: FilterState = {
-  dateRange: {
-    from: new Date(2025, 6, 31), // Jul 31, 2025
-    to: new Date(2025, 7, 3), // Aug 3, 2025
-  },
+  dateRange: null,
   brand: "olive-garden", // Auto-select first brand
-  category: "",
-  subcategory: "",
+  category: "All Categories",
+  subcategory: "All Subcategories",
   priceRange: "",
   attributes: [],
 };
