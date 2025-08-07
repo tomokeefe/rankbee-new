@@ -137,7 +137,7 @@ export default function Settings() {
         {/* Header */}
         <div className="flex items-center gap-3">
           <SettingsIcon className="h-6 w-6 text-[#9369F6]" />
-          <h1 className="text-2xl font-bold text-[#384255]">Settings</h1>
+          <h1 className="text-2xl font-bold text-[#9369F6]">Settings</h1>
         </div>
 
         {/* Tabs */}
