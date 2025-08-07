@@ -263,7 +263,18 @@ Respond in this JSON format:
       }),
     });
 
-    const responseData = await response.json();
+    // Clone the response so we can read it multiple times if needed
+    const responseClone = response.clone();
+
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      const text = await responseClone.text();
+      console.error("Failed to parse JSON response:", text);
+      throw new Error("Invalid JSON response from API");
+    }
 
     if (!response.ok) {
       console.error("Gemini API error details:", response.status, responseData);
