@@ -141,7 +141,7 @@ export default function PromptDeepDive() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#384255]">Prompt Analysis</h1>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Prompt Analysis</h1>
             <p className="text-gray-600">Analyze search prompts and user intent for {brandName}</p>
           </div>
         </div>
