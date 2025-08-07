@@ -187,8 +187,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
               {/* Advanced Filter Panel */}
               {showFilters && (
-                <div className="border rounded-lg bg-white shadow-sm p-4">
-                  <FilterPanel onClose={() => setShowFilters(false)} />
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg bg-gray-50">
+                    <MobileFilterPanel onClose={() => setShowFilters(false)} />
+                  </div>
                 </div>
               )}
             </div>
