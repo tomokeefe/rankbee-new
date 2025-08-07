@@ -108,18 +108,22 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   const [subcategoryPopoverOpen, setSubcategoryPopoverOpen] = useState(false);
 
   const handleCategoryToggle = (category: string) => {
-    if (category === "All Categories") {
-      const newCategories: string[] = [];
+    try {
+      if (category === "All Categories") {
+        const newCategories: string[] = [];
+        setSelectedCategories(newCategories);
+        updateFilter("category", newCategories);
+        return;
+      }
+
+      const newCategories = selectedCategories.includes(category)
+        ? selectedCategories.filter(c => c !== category)
+        : [...selectedCategories, category];
       setSelectedCategories(newCategories);
       updateFilter("category", newCategories);
-      return;
+    } catch (error) {
+      console.error("Error in handleCategoryToggle:", error);
     }
-
-    const newCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category)
-      : [...selectedCategories, category];
-    setSelectedCategories(newCategories);
-    updateFilter("category", newCategories);
   };
 
   const handleSubcategoryToggle = (subcategory: string) => {
