@@ -67,8 +67,10 @@ export function Header() {
     // In a real app, you would redirect to login page or clear authentication state
   };
 
-  const selectedBrand = brands.find((brand) => brand.value === filters.brand);
-  const displayName = selectedBrand?.label || "Olive Garden";
+  // Filter to only show active brands for the selector
+  const activeBrands = brands.filter(brand => brand.status === "active");
+  const selectedBrand = activeBrands.find((brand) => brand.value === filters.brand);
+  const displayName = selectedBrand?.label || (activeBrands.length > 0 ? activeBrands[0].label : "No Brands");
 
   return (
     <>
