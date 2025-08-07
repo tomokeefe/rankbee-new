@@ -127,18 +127,22 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   };
 
   const handleSubcategoryToggle = (subcategory: string) => {
-    if (subcategory === "All Subcategories") {
-      const newSubcategories: string[] = [];
+    try {
+      if (subcategory === "All Subcategories") {
+        const newSubcategories: string[] = [];
+        setSelectedSubcategories(newSubcategories);
+        updateFilter("subcategory", newSubcategories);
+        return;
+      }
+
+      const newSubcategories = selectedSubcategories.includes(subcategory)
+        ? selectedSubcategories.filter(s => s !== subcategory)
+        : [...selectedSubcategories, subcategory];
       setSelectedSubcategories(newSubcategories);
       updateFilter("subcategory", newSubcategories);
-      return;
+    } catch (error) {
+      console.error("Error in handleSubcategoryToggle:", error);
     }
-
-    const newSubcategories = selectedSubcategories.includes(subcategory)
-      ? selectedSubcategories.filter(s => s !== subcategory)
-      : [...selectedSubcategories, subcategory];
-    setSelectedSubcategories(newSubcategories);
-    updateFilter("subcategory", newSubcategories);
   };
 
   const handleDateRangeChange = (range: { from: Date | undefined; to: Date | undefined }) => {
