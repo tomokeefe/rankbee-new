@@ -101,14 +101,21 @@ export function Header() {
               </Select>
 
               {/* Filter Icon */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-8 h-8 p-2 rounded-full hover:bg-gray-100"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-5 h-5 text-[#71717A]" strokeWidth={1.33} />
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-8 h-8 p-2 rounded-full hover:bg-gray-100"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <Filter className="w-5 h-5 text-[#71717A]" strokeWidth={1.33} />
+                </Button>
+
+                {/* Filter Panel */}
+                {showFilters && (
+                  <FilterPanel onClose={() => setShowFilters(false)} />
+                )}
+              </div>
             </div>
           </div>
 
