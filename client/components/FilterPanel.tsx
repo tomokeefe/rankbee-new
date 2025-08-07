@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Filter, CalendarDays, X, ChevronDown } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
 import {
   Select,
   SelectContent,
@@ -9,20 +10,15 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Badge } from "./ui/badge";
-import { cn } from "../lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "./ui/calendar";
+import { format } from "date-fns";
+
+interface FilterPanelProps {
+  onClose: () => void;
+}
 
 // Sample data - in a real app this would come from an API
-const brandOptions = [
-  "All Brands",
-  "Olive Garden",
-  "Maggiano's Little Italy",
-  "Romano's Macaroni Grill",
-  "Carrabba's Italian Grill",
-  "Buca di Beppo",
-  "Tony Roma's",
-  "Cheesecake Factory",
-];
-
 const categoryOptions = [
   "All Categories",
   "Italian Restaurant",
@@ -44,7 +40,6 @@ const subcategoryOptions = [
 ];
 
 const attributeOptions = [
-  "All Attributes",
   "Pet Friendly",
   "Outdoor Seating",
   "Delivery Available",
@@ -57,30 +52,21 @@ const attributeOptions = [
 ];
 
 interface FilterState {
-  dateRange: string;
-  brand: string;
+  dateRange: { from: Date | undefined; to: Date | undefined };
   category: string;
   subcategory: string;
   attributes: string[];
 }
 
-export function FilterPanel() {
+export function FilterPanel({ onClose }: FilterPanelProps) {
   const [filters, setFilters] = useState<FilterState>({
-    dateRange: "Jul 31 - Aug 3, 2025",
-    brand: "Olive Garden",
-    category: "Italian Restaurant",
+    dateRange: { from: undefined, to: undefined },
+    category: "",
     subcategory: "",
     attributes: [],
   });
 
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const handleToggleExpanded = () => {
-    console.log("Filter panel toggle clicked, current state:", isExpanded);
-    setIsExpanded(!isExpanded);
-  };
-
-  const updateFilter = (key: keyof FilterState, value: string | string[]) => {
+  const updateFilter = (key: keyof FilterState, value: any) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
@@ -88,7 +74,6 @@ export function FilterPanel() {
   };
 
   const addAttribute = (attribute: string) => {
-    if (attribute === "All Attributes") return;
     if (!filters.attributes.includes(attribute)) {
       updateFilter("attributes", [...filters.attributes, attribute]);
     }
@@ -103,8 +88,7 @@ export function FilterPanel() {
 
   const clearAllFilters = () => {
     setFilters({
-      dateRange: "",
-      brand: "",
+      dateRange: { from: undefined, to: undefined },
       category: "",
       subcategory: "",
       attributes: [],
@@ -113,251 +97,172 @@ export function FilterPanel() {
 
   const applyFilters = () => {
     console.log("Applying filters:", filters);
-    // In a real app, this would trigger a data fetch or update the dashboard
+    onClose();
+  };
+
+  const formatDateRange = () => {
+    if (filters.dateRange.from) {
+      if (filters.dateRange.to) {
+        return `${format(filters.dateRange.from, "MMM dd")} - ${format(filters.dateRange.to, "MMM dd, yyyy")}`;
+      }
+      return format(filters.dateRange.from, "MMM dd, yyyy");
+    }
+    return "Select date range";
   };
 
   const hasActiveFilters =
-    filters.brand ||
     filters.category ||
     filters.subcategory ||
-    filters.attributes.length > 0;
+    filters.attributes.length > 0 ||
+    filters.dateRange.from ||
+    filters.dateRange.to;
 
   return (
-    <div
-      className={cn(
-        "mb-6 rounded-lg border transition-all duration-200",
-        isExpanded
-          ? "bg-card shadow-sm border-border"
-          : "bg-background/60 hover:bg-card/80 border-border/40 hover:border-border hover:shadow-sm",
-      )}
-    >
-      <div className="py-4 px-4">
-        <div className="flex items-center justify-between w-full">
-          {/* Left side - Filters label and active filters */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={handleToggleExpanded}
-              className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"
-            >
-              <Filter className="h-4 w-4" />
-              <span className="font-semibold">Filters</span>
-              {hasActiveFilters && (
-                <Badge variant="secondary" className="h-5 text-xs">
-                  {
-                    [
-                      filters.brand,
-                      filters.category,
-                      filters.subcategory,
-                      ...filters.attributes,
-                    ].filter(Boolean).length
-                  }
-                </Badge>
-              )}
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 transition-transform",
-                  isExpanded && "rotate-180",
-                )}
-              />
-            </Button>
-
-            {/* Active filter display when collapsed */}
-            {!isExpanded && hasActiveFilters && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {filters.brand && <span>{filters.brand}</span>}
-                {filters.category && <span>• {filters.category}</span>}
-              </div>
-            )}
-          </div>
-
-          {/* Right side - Action buttons */}
-          <div className="flex items-center gap-2">
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAllFilters}
-                className="text-muted-foreground h-8 px-3 text-sm"
-              >
-                Clear
-              </Button>
-            )}
-            <Button
-              onClick={applyFilters}
-              size="sm"
-              className="h-8 px-4 text-sm"
-            >
-              Apply
-            </Button>
-          </div>
+    <Card className="absolute top-full left-[20px] mt-2 w-96 shadow-lg border z-50 bg-white">
+      <CardContent className="p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-sm">Filters</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="h-6 w-6 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-      </div>
 
-      {isExpanded && (
-        <div className="space-y-4 pt-0 px-4 pb-4">
-          {/* Compact Filter Controls */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {/* Date Range */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Date Range
-              </label>
+        {/* Date Range */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Date Range</label>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                size="sm"
-                className="w-full justify-start text-xs h-8"
+                className="w-full justify-start text-left font-normal"
               >
-                <CalendarDays className="h-3 w-3 mr-1" />
-                {filters.dateRange || "Select"}
+                <CalendarDays className="mr-2 h-4 w-4" />
+                {formatDateRange()}
               </Button>
-            </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                defaultMonth={filters.dateRange.from}
+                selected={filters.dateRange}
+                onSelect={(range) => updateFilter("dateRange", range || { from: undefined, to: undefined })}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-            {/* Brand Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Brand
-              </label>
-              <Select
-                value={filters.brand}
-                onValueChange={(value) =>
-                  updateFilter("brand", value === "All Brands" ? "" : value)
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {brandOptions.map((brand) => (
-                    <SelectItem key={brand} value={brand} className="text-xs">
-                      {brand}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        {/* Category */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Category</label>
+          <Select
+            value={filters.category}
+            onValueChange={(value) =>
+              updateFilter("category", value === "All Categories" ? "" : value)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categoryOptions.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-            {/* Category Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Category
-              </label>
-              <Select
-                value={filters.category}
-                onValueChange={(value) =>
-                  updateFilter(
-                    "category",
-                    value === "All Categories" ? "" : value,
-                  )
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((category) => (
-                    <SelectItem
-                      key={category}
-                      value={category}
-                      className="text-xs"
-                    >
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        {/* Subcategory */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Subcategory</label>
+          <Select
+            value={filters.subcategory}
+            onValueChange={(value) =>
+              updateFilter("subcategory", value === "All Subcategories" ? "" : value)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select subcategory" />
+            </SelectTrigger>
+            <SelectContent>
+              {subcategoryOptions.map((subcategory) => (
+                <SelectItem key={subcategory} value={subcategory}>
+                  {subcategory}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-            {/* Subcategory Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Subcategory
-              </label>
-              <Select
-                value={filters.subcategory}
-                onValueChange={(value) =>
-                  updateFilter(
-                    "subcategory",
-                    value === "All Subcategories" ? "" : value,
-                  )
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategoryOptions.map((subcategory) => (
-                    <SelectItem
-                      key={subcategory}
-                      value={subcategory}
-                      className="text-xs"
-                    >
-                      {subcategory}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Attributes Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Attributes
-              </label>
-              <Select onValueChange={addAttribute}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Add" />
-                </SelectTrigger>
-                <SelectContent>
-                  {attributeOptions
-                    .filter(
-                      (attr) =>
-                        attr === "All Attributes" ||
-                        !filters.attributes.includes(attr),
-                    )
-                    .map((attribute) => (
-                      <SelectItem
-                        key={attribute}
-                        value={attribute}
-                        className="text-xs"
-                      >
-                        {attribute}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        {/* Attributes */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Attributes</label>
+          <Select onValueChange={addAttribute}>
+            <SelectTrigger>
+              <SelectValue placeholder="Add attribute" />
+            </SelectTrigger>
+            <SelectContent>
+              {attributeOptions
+                .filter((attr) => !filters.attributes.includes(attr))
+                .map((attribute) => (
+                  <SelectItem key={attribute} value={attribute}>
+                    {attribute}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
 
           {/* Selected Attributes */}
           {filters.attributes.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Selected Attributes
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {filters.attributes.map((attribute) => (
-                  <Badge
-                    key={attribute}
-                    variant="secondary"
-                    className="gap-1 pr-1 text-xs h-6"
+            <div className="flex flex-wrap gap-1 mt-2">
+              {filters.attributes.map((attribute) => (
+                <Badge
+                  key={attribute}
+                  variant="secondary"
+                  className="gap-1 pr-1"
+                >
+                  {attribute}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-3 w-3 p-0 hover:bg-transparent"
+                    onClick={() => removeAttribute(attribute)}
                   >
-                    {attribute}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-3 w-3 p-0 hover:bg-transparent"
-                      onClick={() => removeAttribute(attribute)}
-                    >
-                      <X className="h-2 w-2" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
+                    <X className="h-2 w-2" />
+                  </Button>
+                </Badge>
+              ))}
             </div>
           )}
         </div>
-      )}
-    </div>
+
+        {/* Action buttons */}
+        <div className="flex justify-between pt-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearAllFilters}
+            className="text-sm"
+            disabled={!hasActiveFilters}
+          >
+            Clear Filters
+          </Button>
+          <Button
+            onClick={applyFilters}
+            size="sm"
+            className="text-sm"
+          >
+            Apply Filters
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
