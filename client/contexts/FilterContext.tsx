@@ -111,8 +111,8 @@ const defaultBrands: Brand[] = [
 const defaultFilters: FilterState = {
   dateRange: null,
   brand: "olive-garden", // Auto-select first brand
-  category: "All Categories",
-  subcategory: "All Subcategories",
+  category: [],
+  subcategory: [],
   priceRange: "",
   attributes: [],
 };
