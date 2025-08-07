@@ -5,6 +5,18 @@ export interface DateRange {
   to: Date | undefined;
 }
 
+export interface Brand {
+  id: string;
+  name: string;
+  url: string;
+  category: string;
+  status: "active" | "inactive";
+  addedDate: string;
+  description?: string;
+  value?: string; // For compatibility with selector
+  label?: string; // For compatibility with selector
+}
+
 export interface FilterState {
   dateRange?: DateRange | null;
   brand: string;
@@ -16,10 +28,14 @@ export interface FilterState {
 
 export interface FilterContextType {
   filters: FilterState;
+  brands: Brand[];
   updateFilter: <K extends keyof FilterState>(
     key: K,
     value: FilterState[K],
   ) => void;
+  addBrand: (brand: Omit<Brand, 'id'>) => void;
+  updateBrand: (id: string, brand: Partial<Brand>) => void;
+  deleteBrand: (id: string) => void;
   resetFilters: () => void;
 }
 
