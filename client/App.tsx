@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FilterProvider } from "./contexts/FilterContext";
 import Index from "./pages/Index";
 import CategoryOverview from "./pages/CategoryOverview";
+import Trends from "./pages/Trends";
 import Visibility from "./pages/Visibility";
 import BrandOverview from "./pages/BrandOverview";
 import PromptDeepDive from "./pages/PromptDeepDive";
