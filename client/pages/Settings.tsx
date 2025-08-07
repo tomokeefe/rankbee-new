@@ -79,14 +79,16 @@ export default function Settings() {
     {
       id: "1",
       name: "Olive Garden",
+      url: "https://www.olivegarden.com",
       category: "Casual Dining",
       status: "active",
       addedDate: "2025-01-01",
       description: "Family-friendly Italian restaurant chain"
     },
     {
-      id: "2", 
+      id: "2",
       name: "Maggiano's",
+      url: "https://www.maggianos.com",
       category: "Fine Dining",
       status: "active",
       addedDate: "2025-01-05",
@@ -95,7 +97,8 @@ export default function Settings() {
     {
       id: "3",
       name: "Carrabba's",
-      category: "Casual Dining", 
+      url: "https://www.carrabbas.com",
+      category: "Casual Dining",
       status: "inactive",
       addedDate: "2024-12-15",
       description: "Italian-American restaurant chain"
