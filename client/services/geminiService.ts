@@ -58,16 +58,15 @@ Focus on understanding what the user is looking for and how it relates to brand 
       }),
     });
 
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock analysis");
+      return generateMockAnalysis(prompt, brandName);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error details:", response.status, errorText);
-
-      // Handle quota exceeded error specifically
-      if (response.status === 429) {
-        console.warn("Gemini API quota exceeded, falling back to mock analysis");
-        return generateMockAnalysis(prompt, brandName);
-      }
-
       throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
