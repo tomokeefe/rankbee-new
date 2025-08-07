@@ -51,38 +51,45 @@ function HorizontalBar({ data, title }: HorizontalBarProps) {
       <CardContent>
         <div className="space-y-6">
           {data.map((item, index) => (
-            <div key={index} className="space-y-3">
-              <div className="flex items-start justify-between text-sm">
-                <span className="font-medium text-foreground flex-1 pr-2">{item.name}</span>
-                <div className="flex flex-col items-end gap-1 min-w-0">
-                  <span className="text-muted-foreground whitespace-nowrap text-xs">
+            <div key={index} className="space-y-2">
+              {/* Top row with name and metrics */}
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground text-sm truncate pr-4">
+                  {item.name}
+                </span>
+                <div className="flex items-center gap-4 text-xs shrink-0">
+                  <span className="text-muted-foreground whitespace-nowrap">
                     Avg Rank: {item.avgRank}
                   </span>
                   <div
                     className={cn(
-                      "flex items-center gap-1 whitespace-nowrap",
+                      "flex items-center gap-1",
                       item.change > 0 ? "text-green-600" : "text-red-600",
                     )}
                   >
                     {item.change > 0 ? (
-                      <ArrowUp className="h-3 w-3 flex-shrink-0" />
+                      <ArrowUp className="h-3 w-3" />
                     ) : (
-                      <ArrowDown className="h-3 w-3 flex-shrink-0" />
+                      <ArrowDown className="h-3 w-3" />
                     )}
-                    <span className="text-xs">{Math.abs(item.change)}%</span>
+                    <span>{Math.abs(item.change)}%</span>
                   </div>
                 </div>
               </div>
-              <div className="relative">
+
+              {/* Progress bar with percentage on separate line */}
+              <div className="space-y-1">
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all duration-500"
                     style={{ width: `${item.coverage}%` }}
                   />
                 </div>
-                <span className="absolute right-0 -top-6 text-xs text-muted-foreground">
-                  {item.coverage}%
-                </span>
+                <div className="flex justify-end">
+                  <span className="text-xs text-muted-foreground">
+                    {item.coverage}%
+                  </span>
+                </div>
               </div>
             </div>
           ))}
