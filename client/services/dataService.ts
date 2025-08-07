@@ -200,7 +200,13 @@ export function getGlobalBrandsData(filters?: FilterState) {
   let brandsData = [...baseData.globalBrands];
 
   // Apply category filter
-  if (filters?.category && filters.category !== "All Categories") {
+  if (filters?.category && Array.isArray(filters.category) && filters.category.length > 0) {
+    brandsData = brandsData.filter(brand =>
+      filters.category!.some(cat =>
+        brand.category.toLowerCase().includes(cat.toLowerCase())
+      )
+    );
+  } else if (filters?.category && typeof filters.category === 'string' && filters.category !== "All Categories") {
     brandsData = brandsData.filter(brand =>
       brand.category.toLowerCase().includes(filters.category!.toLowerCase())
     );
