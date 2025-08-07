@@ -58,7 +58,18 @@ Focus on understanding what the user is looking for and how it relates to brand 
       }),
     });
 
-    const data = await response.json();
+    // Clone the response so we can read it multiple times if needed
+    const responseClone = response.clone();
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      const text = await responseClone.text();
+      console.error("Failed to parse JSON response:", text);
+      throw new Error("Invalid JSON response from API");
+    }
 
     if (!response.ok) {
       console.error("Gemini API error details:", response.status, data);
