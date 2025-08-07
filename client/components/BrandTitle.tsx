@@ -51,7 +51,7 @@ export function BrandTitle() {
                 <SelectItem
                   key={brand.value}
                   value={brand.value}
-                  className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100"
+                  className="text-lg py-3 hover:bg-gray-100 focus:bg-purple-100 data-[highlighted]:bg-gray-100 focus:text-gray-900 hover:text-gray-900"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-purple-600" />
