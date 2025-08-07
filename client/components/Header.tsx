@@ -38,7 +38,7 @@ export function Header() {
       <header className="bg-white h-[90px] shadow-md relative z-40">
         <div className="flex h-full items-center px-5 gap-9">
           {/* Left side - Logo and Brand */}
-          <div className="flex items-center gap-[208px]">
+          <div className="flex items-center gap-[280px]">
             <div className="flex items-center gap-[25px]">
               {/* Logo */}
               <img
@@ -66,7 +66,7 @@ export function Header() {
 
               {/* Brand Dropdown */}
               <Select value={filters.brand} onValueChange={handleBrandChange}>
-                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative">
+                <SelectTrigger className="w-[311px] h-[51px] px-[33px] border border-[#C9C9C9] rounded-full bg-white text-[#384255] font-bold text-[23px] leading-5 justify-center relative [&>svg]:hidden">
                   <SelectValue placeholder="Select Brand" className="text-[#384255] font-bold text-[23px]">
                     {displayName}
                   </SelectValue>
