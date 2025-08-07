@@ -14,6 +14,7 @@ import Visibility from "./pages/Visibility";
 import BrandOverview from "./pages/BrandOverview";
 import PromptDeepDive from "./pages/PromptDeepDive";
 import CitationAnalysis from "./pages/CitationAnalysis";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
