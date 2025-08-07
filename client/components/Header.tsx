@@ -31,7 +31,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { FilterPanelSimple as FilterPanel } from "./FilterPanelSimple";
+import { FilterPanel } from "./FilterPanel";
 
 export function Header() {
   const { filters, brands, updateFilter } = useFilters();
