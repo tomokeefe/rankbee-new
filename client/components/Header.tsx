@@ -115,7 +115,7 @@ export function Header() {
                 </Button>
 
                 {/* Filter Panel */}
-                {showFilters && (
+                {(showFilters || true) && (
                   <FilterPanel onClose={() => setShowFilters(false)} />
                 )}
               </div>
