@@ -32,6 +32,16 @@ import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FilterPanel } from "./FilterPanel";
 
+// Available models
+const models = [
+  { value: "chatgpt", label: "ChatGPT" },
+  { value: "gemini", label: "Gemini" },
+  { value: "grok", label: "Grok" },
+  { value: "claude", label: "Claude" },
+  { value: "apple", label: "Apple" },
+  { value: "llama", label: "Llama" },
+];
+
 // Available brands
 const brands = [
   { value: "olive-garden", label: "Olive Garden" },
