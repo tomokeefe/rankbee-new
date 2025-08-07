@@ -16,17 +16,17 @@ export default function Index() {
         {/* Summary */}
         <Summary />
 
-        {/* Time Series Chart */}
-        <TimeSeriesChart />
-
-        {/* Breakdown Charts and Additional Components */}
-        <BreakdownCharts />
-
-        {/* Bottom Section */}
+        {/* Top Brands Globally and Citation Analysis - moved above Time Series Chart */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <Top10Brands />
           <CitationsTable />
         </div>
+
+        {/* Brand Performance Over Time Chart */}
+        <TimeSeriesChart />
+
+        {/* Breakdown Charts and Additional Components */}
+        <BreakdownCharts />
       </div>
     </DashboardLayout>
   );
