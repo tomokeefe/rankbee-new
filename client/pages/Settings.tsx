@@ -41,17 +41,8 @@ import {
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
 
-interface Brand {
-  id: string;
-  name: string;
-  url: string;
-  category: string;
-  status: "active" | "inactive";
-  addedDate: string;
-  description?: string;
-}
-
 export default function Settings() {
+  const { brands, addBrand, updateBrand, deleteBrand } = useFilters();
   const [activeTab, setActiveTab] = useState<"global" | "connections">("global");
   const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [editingBrand, setEditingBrand] = useState<string | null>(null);
