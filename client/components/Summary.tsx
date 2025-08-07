@@ -30,13 +30,10 @@ export function Summary() {
   const { filters } = useFilters();
   const [aiInsights, setAiInsights] = useState<AISummaryInsight[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showAIEnhanced, setShowAIEnhanced] = useState(true);
 
   useEffect(() => {
-    if (showAIEnhanced) {
-      generateAISummary();
-    }
-  }, [filters.brand, filters.timeframe, showAIEnhanced]);
+    generateAISummary();
+  }, [filters.brand, filters.timeframe]);
 
   const generateAISummary = async () => {
     setLoading(true);
@@ -91,71 +88,20 @@ export function Summary() {
     }
   };
 
-  const staticSummary = [
-    {
-      type: 'ranking',
-      icon: Eye,
-      iconColor: 'text-purple-600',
-      text: `Brand ranks #3 overall in whiskey-related queries`,
-      confidence: 1.0
-    },
-    {
-      type: 'performance',
-      icon: TrendingUp,
-      iconColor: 'text-green-600',
-      text: 'Appeared in 64.3 percent of answers',
-      confidence: 1.0
-    },
-    {
-      type: 'alert',
-      icon: TrendingDown,
-      iconColor: 'text-amber-600',
-      text: 'Your visibility dropped slightly this week - consider boosting in Bourbon and single-malt subcategories',
-      confidence: 1.0
-    }
-  ];
-
-  const currentInsights = showAIEnhanced ? aiInsights : staticSummary;
-
   return (
     <Card className="mb-6">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            Summary
-            {showAIEnhanced && (
-              <>
-                <Brain className="h-4 w-4 text-purple-600" />
-                <Sparkles className="h-3 w-3 text-purple-400" />
-              </>
-            )}
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={showAIEnhanced ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowAIEnhanced(!showAIEnhanced)}
-              className="text-xs"
-            >
-              {showAIEnhanced ? (
-                <>
-                  <Brain className="h-3 w-3 mr-1" />
-                  AI Enhanced
-                </>
-              ) : (
-                'Enable AI'
-              )}
-            </Button>
-          </div>
-        </div>
-        {showAIEnhanced && (
-          <p className="text-xs text-gray-500 mt-1">
-            AI-powered insights based on your brand performance data
-          </p>
-        )}
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          Summary
+          <Brain className="h-4 w-4 text-purple-600" />
+          <Sparkles className="h-3 w-3 text-purple-400" />
+        </CardTitle>
+        <p className="text-xs text-gray-500 mt-1">
+          AI-powered insights based on your brand performance data
+        </p>
       </CardHeader>
       <CardContent className="pt-0">
-        {loading && showAIEnhanced ? (
+        {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-start gap-2 animate-pulse">
@@ -168,7 +114,7 @@ export function Summary() {
           </div>
         ) : (
           <div className="space-y-3 text-sm">
-            {currentInsights.map((insight, index) => {
+            {aiInsights.map((insight, index) => {
               const IconComponent = insight.icon;
               return (
                 <div key={index} className="flex items-start gap-2">
@@ -177,28 +123,26 @@ export function Summary() {
                     <p className="text-foreground">
                       {insight.text}
                     </p>
-                    {showAIEnhanced && insight.confidence && (
-                      <div className="flex items-center gap-2 mt-1">
-                        {insight.metric && (
-                          <Badge variant="outline" className="text-xs">
-                            {insight.metric}
-                          </Badge>
-                        )}
-                        {insight.change && (
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              insight.change > 0 ? 'text-green-600' : 'text-red-600'
-                            }`}
-                          >
-                            {insight.change > 0 ? '+' : ''}{insight.change}%
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs text-gray-500">
-                          {Math.round(insight.confidence * 100)}% confidence
+                    <div className="flex items-center gap-2 mt-1">
+                      {insight.metric && (
+                        <Badge variant="outline" className="text-xs">
+                          {insight.metric}
                         </Badge>
-                      </div>
-                    )}
+                      )}
+                      {insight.change && (
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${
+                            insight.change > 0 ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {insight.change > 0 ? '+' : ''}{insight.change}%
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="text-xs text-gray-500">
+                        {Math.round(insight.confidence * 100)}% confidence
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               );
@@ -206,7 +150,7 @@ export function Summary() {
           </div>
         )}
 
-        {showAIEnhanced && !loading && (
+        {!loading && (
           <div className="flex justify-end mt-4 pt-3 border-t">
             <Button
               variant="ghost"
