@@ -69,6 +69,25 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     updateFilter("brand", value);
   };
 
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
   // Filter to only show active brands for the selector
   const activeBrands = brands.filter(brand => brand.status === "active");
   const selectedBrand = activeBrands.find((brand) => brand.value === filters.brand);
