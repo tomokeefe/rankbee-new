@@ -70,6 +70,10 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   });
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>(filters.attributes || []);
   const [selectedModel, setSelectedModel] = useState("ChatGPT");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(filters.category || []);
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(filters.subcategory || []);
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
+  const [subcategoryPopoverOpen, setSubcategoryPopoverOpen] = useState(false);
 
   const handleCategoryChange = (value: string) => {
     updateFilter("category", value);
