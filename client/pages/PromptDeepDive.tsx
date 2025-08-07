@@ -138,6 +138,14 @@ export default function PromptDeepDive() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#384255]">Prompt Analysis</h1>
+            <p className="text-gray-600">Analyze search prompts and user intent for {brandName}</p>
+          </div>
+        </div>
+
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
