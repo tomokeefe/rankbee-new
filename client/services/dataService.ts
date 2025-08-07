@@ -163,7 +163,7 @@ const baseData = {
     { name: "Brinker Intl.", coverage: 13, rank: 3.16, logo: "🍔" },
     { name: "Buca Di Beppo", coverage: 52, rank: 3.24, logo: "🍕" },
     { name: "Buca Inc.", coverage: 8.61, rank: 3.61, logo: "🥘" },
-    { name: "Pasta Pomodoro", coverage: 11, rank: 4.53, logo: "��" },
+    { name: "Pasta Pomodoro", coverage: 11, rank: 4.53, logo: "🍅" },
   ],
 
   categoryBreakdown: [
@@ -210,13 +210,7 @@ export function getGlobalBrandsData(filters?: FilterState) {
   }
 
   // Apply category filter
-  if (filters?.category && Array.isArray(filters.category) && filters.category.length > 0) {
-    brandsData = brandsData.filter(brand =>
-      filters.category!.some(cat =>
-        brand.category.toLowerCase().includes(cat.toLowerCase())
-      )
-    );
-  } else if (filters?.category && typeof filters.category === 'string' && filters.category !== "All Categories") {
+  if (filters?.category && filters.category !== "All Categories") {
     brandsData = brandsData.filter(brand =>
       brand.category.toLowerCase().includes(filters.category!.toLowerCase())
     );
