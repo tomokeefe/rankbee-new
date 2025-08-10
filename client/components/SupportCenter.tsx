@@ -339,10 +339,18 @@ export function SupportCenter({ onClose }: SupportCenterProps) {
 
   const handlePhoneCall = () => {
     window.location.href = "tel:+15551234567";
+    toast({
+      title: "Opening Phone App",
+      description: "Calling (555) 123-4567...",
+    });
   };
 
   const handleEmailSupport = () => {
     window.location.href = "mailto:support@growcreate.com?subject=Support Request&body=Please describe your issue...";
+    toast({
+      title: "Opening Email Client",
+      description: "Composing email to support@growcreate.com...",
+    });
   };
 
   return (
