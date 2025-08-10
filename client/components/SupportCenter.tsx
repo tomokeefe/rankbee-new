@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useToast } from "../hooks/use-toast";
 
 interface SupportCenterProps {
   onClose?: () => void;
