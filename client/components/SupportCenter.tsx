@@ -133,7 +133,12 @@ function LiveChat() {
     setMessages(prev => [...prev, userMessage]);
     setNewMessage("");
     setIsTyping(true);
-    
+
+    toast({
+      title: "Message sent",
+      description: "A support specialist will respond shortly.",
+    });
+
     // Simulate support response
     setTimeout(() => {
       const supportResponse = {
