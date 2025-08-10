@@ -204,7 +204,7 @@ export function Header() {
                   <span className="text-sm font-medium">Support</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px]">
+              <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <HelpCircle className="h-5 w-5 text-[#9369F6]" />
@@ -214,59 +214,8 @@ export function Header() {
                     Find answers to common questions or get help with your account.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="cursor-pointer hover:border-[#9369F6] transition-colors">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          <HelpCircle className="h-4 w-4 text-[#9369F6]" />
-                          FAQ
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-sm text-gray-600">Browse frequently asked questions and common solutions.</p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="cursor-pointer hover:border-[#9369F6] transition-colors">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          <MessageCircle className="h-4 w-4 text-[#9369F6]" />
-                          Live Chat
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-sm text-gray-600">Chat with our support team in real-time.</p>
-                        <p className="text-xs text-green-600 mt-1">• Available now</p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="cursor-pointer hover:border-[#9369F6] transition-colors">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-[#9369F6]" />
-                          Phone Support
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-sm text-gray-600">Call us at (555) 123-4567</p>
-                        <p className="text-xs text-gray-500 mt-1">Mon-Fri 9AM-6PM EST</p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="cursor-pointer hover:border-[#9369F6] transition-colors">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-[#9369F6]" />
-                          Email Support
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-sm text-gray-600">Send us an email at support@growcreate.com</p>
-                        <p className="text-xs text-gray-500 mt-1">Response within 24 hours</p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                <div className="py-4">
+                  <SupportCenter onClose={() => setSupportOpen(false)} />
                 </div>
               </DialogContent>
             </Dialog>
