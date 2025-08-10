@@ -117,6 +117,8 @@ function LiveChat() {
   ]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const { toast } = useToast();
 
   const sendMessage = () => {
     if (!newMessage.trim()) return;
