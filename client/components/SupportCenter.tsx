@@ -318,6 +318,7 @@ export function SupportCenter({ onClose }: SupportCenterProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [openFaqItems, setOpenFaqItems] = useState<string[]>([]);
+  const { toast } = useToast();
 
   // Filter FAQ based on search
   const filteredFaq = faqCategories.map(category => ({
