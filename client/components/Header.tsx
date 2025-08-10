@@ -33,6 +33,7 @@ import { Label } from "./ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FilterPanel } from "./FilterPanel";
 import { MobileMenu } from "./MobileMenu";
+import { SupportCenter } from "./SupportCenter";
 
 export function Header() {
   const { filters, brands, updateFilter } = useFilters();
