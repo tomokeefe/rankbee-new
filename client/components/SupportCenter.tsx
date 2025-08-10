@@ -227,7 +227,12 @@ function ContactForm() {
     
     setIsSubmitting(false);
     setSubmitted(true);
-    
+
+    toast({
+      title: "Message Sent Successfully!",
+      description: "We'll get back to you within 24 hours.",
+    });
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setSubmitted(false);
