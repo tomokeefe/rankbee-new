@@ -242,7 +242,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
                   </span>
                 </div>
               )}
-              <ChevronDown className="h-5 w-5 text-[#49454F]" />
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "attributes" ? 'rotate-180' : ''}`} />
             </div>
           </div>
 
