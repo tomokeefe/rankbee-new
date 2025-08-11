@@ -38,7 +38,7 @@ import { SupportCenter } from "./SupportCenter";
 
 export function Header() {
   const { filters, brands, updateFilter } = useFilters();
-  const [showFilters, setShowFilters] = useState(false);
+  const { isFilterOpen, setIsFilterOpen } = useFilterVisibility();
   const [supportOpen, setSupportOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
