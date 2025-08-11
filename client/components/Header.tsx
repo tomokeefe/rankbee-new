@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFilters } from "../contexts/FilterContext";
 import { useFilterVisibility } from "../contexts/FilterVisibilityContext";
 import { Link } from "react-router-dom";
-import { ChevronDown, Headphones, Filter, Mail, User, Settings, LogOut, HelpCircle, MessageCircle, Phone, MapPin, Menu } from "lucide-react";
+import { ChevronDown, Headphones, Filter, Mail, User, Settings, LogOut, HelpCircle, MessageCircle, Phone, MapPin, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -84,6 +84,16 @@ export function Header() {
                               (filters.selectedAttributes?.length || 0) +
                               (filters.selectedModel ? 1 : 0);
 
+  // Clear all filters function
+  const handleClearFilters = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening filter panel
+    updateFilter('selectedCategories', []);
+    updateFilter('selectedSubcategories', []);
+    updateFilter('selectedAttributes', []);
+    updateFilter('selectedModel', '');
+    updateFilter('activeDropdown', null);
+  };
+
   return (
     <>
       <header className="bg-white h-[90px] shadow-md sticky top-0 z-40">
@@ -152,7 +162,7 @@ export function Header() {
               </Select>
 
               {/* Filter Icon */}
-              <div className="relative">
+              <div className="relative flex items-center">
                 <Button
                   variant="ghost"
                   className="h-10 px-4 text-[#9369F6] hover:text-purple-700 hover:bg-purple-50 gap-2"
@@ -170,6 +180,17 @@ export function Header() {
                   )}
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
                 </Button>
+                {totalSelectedFilters > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="ml-1 h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                    title="Clear all filters"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>
