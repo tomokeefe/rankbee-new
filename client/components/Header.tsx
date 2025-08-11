@@ -443,6 +443,11 @@ export function Header() {
         </div>
       </header>
 
+      {/* Filter Panel - pushes content down when open */}
+      {showFilters && (
+        <FilterPanel onClose={() => setShowFilters(false)} />
+      )}
+
       {/* Mobile Menu */}
       <MobileMenu
         isOpen={mobileMenuOpen}
