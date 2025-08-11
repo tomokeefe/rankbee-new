@@ -8,18 +8,6 @@ import { useFilters } from "../contexts/FilterContext";
 
 interface FilterPanelProps {
   onClose: () => void;
-  persistentState: {
-    selectedCategories: string[];
-    selectedSubcategories: string[];
-    selectedAttributes: string[];
-    selectedModel: string;
-    activeDropdown: string | null;
-    dateRange: {
-      from: Date | undefined;
-      to: Date | undefined;
-    };
-  };
-  onStateChange: (state: FilterPanelProps['persistentState']) => void;
 }
 
 // Sample data matching the Figma designs
