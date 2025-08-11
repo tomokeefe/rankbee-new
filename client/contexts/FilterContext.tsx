@@ -24,6 +24,16 @@ export interface FilterState {
   subcategory?: string[];
   priceRange?: string;
   attributes?: string[];
+  // Filter panel specific state
+  selectedCategories: string[];
+  selectedSubcategories: string[];
+  selectedAttributes: string[];
+  selectedModel: string;
+  activeDropdown: string | null;
+  filterDateRange: {
+    from: Date | undefined;
+    to: Date | undefined;
+  };
 }
 
 export interface FilterContextType {
@@ -115,6 +125,16 @@ const defaultFilters: FilterState = {
   subcategory: [],
   priceRange: "",
   attributes: [],
+  // Filter panel defaults
+  selectedCategories: [],
+  selectedSubcategories: [],
+  selectedAttributes: [],
+  selectedModel: "",
+  activeDropdown: null,
+  filterDateRange: {
+    from: new Date(2025, 7, 1), // Aug 01, 2025
+    to: new Date(2025, 8, 2)   // Sep 02, 2025
+  },
 };
 
 // Create default context value
