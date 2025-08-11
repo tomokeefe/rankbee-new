@@ -672,8 +672,10 @@ export default function CitationAnalysis() {
                             size="sm"
                             onClick={() => handleViewCitation(citation.url)}
                             title="View Citation"
+                            className="flex items-center gap-1 text-xs"
                           >
-                            <ExternalLink className="h-3 w-3" />
+                            <Eye className="h-3 w-3" />
+                            View
                           </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
