@@ -259,7 +259,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
               <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
                 {selectedModel || "Model"}
               </span>
-              <ChevronDown className="h-5 w-5 text-[#49454F]" />
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "model" ? 'rotate-180' : ''}`} />
             </div>
           </div>
         </div>
