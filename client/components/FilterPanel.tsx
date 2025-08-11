@@ -141,7 +141,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
   };
 
   return (
-    <div className="w-full bg-[#F3F4F5] border-t border-gray-200">
+    <div className="w-full bg-[#F3F4F5] border-t border-gray-200 z-50">
       <div className="max-w-[1600px] mx-auto px-8 py-3">
         {/* Main filter row */}
         <div className="flex items-center gap-[11px]">
