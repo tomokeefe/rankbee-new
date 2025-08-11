@@ -48,23 +48,18 @@ const modelOptions = [
   "Gemini"
 ];
 
-export function FilterPanel({ onClose, persistentState, onStateChange }: FilterPanelProps) {
+export function FilterPanel({ onClose }: FilterPanelProps) {
   const { filters, updateFilter } = useFilters();
 
-  // Use persistent state from parent
+  // Use filter state from context
   const {
     selectedCategories,
     selectedSubcategories,
     selectedAttributes,
     selectedModel,
     activeDropdown,
-    dateRange
-  } = persistentState;
-
-  // Helper function to update persistent state
-  const updatePersistentState = (updates: Partial<typeof persistentState>) => {
-    onStateChange({ ...persistentState, ...updates });
-  };
+    filterDateRange
+  } = filters;
 
   // Calculate total selected filters for badge
   const totalSelectedFilters = selectedCategories.length + selectedSubcategories.length + selectedAttributes.length + (selectedModel ? 1 : 0);
