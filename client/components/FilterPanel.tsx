@@ -101,10 +101,17 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   };
 
   const handleAttributeToggle = (attribute: string) => {
+    if (attribute === "All") {
+      const newAttributes: string[] = [];
+      setSelectedAttributes(newAttributes);
+      updateFilter("attributes", newAttributes);
+      return;
+    }
+
     const newAttributes = selectedAttributes.includes(attribute)
       ? selectedAttributes.filter(a => a !== attribute)
       : [...selectedAttributes, attribute];
-    
+
     setSelectedAttributes(newAttributes);
     updateFilter("attributes", newAttributes);
   };
