@@ -50,6 +50,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import { format } from "date-fns";
 import {
   LineChart,
@@ -87,6 +94,8 @@ export default function CitationAnalysis() {
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [showAllData, setShowAllData] = useState(false);
+  const [selectedCitation, setSelectedCitation] = useState<any>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const { toast } = useToast();
 
   // Get brand-specific citation data
@@ -135,7 +144,12 @@ export default function CitationAnalysis() {
     return true;
   });
 
-  const handleViewCitation = (url: string) => {
+  const handleViewCitation = (citation: any) => {
+    setSelectedCitation(citation);
+    setIsViewModalOpen(true);
+  };
+
+  const handleOpenExternalLink = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -670,8 +684,8 @@ export default function CitationAnalysis() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleViewCitation(citation.url)}
-                            title="View Citation"
+                            onClick={() => handleViewCitation(citation)}
+                            title="View Citation Details"
                             className="flex items-center gap-1 text-xs"
                           >
                             <Eye className="h-3 w-3" />
@@ -684,15 +698,25 @@ export default function CitationAnalysis() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleViewCitation(citation.url)}>
+                              <DropdownMenuItem onClick={() => handleViewCitation(citation)}>
+                                <Eye className="h-3 w-3 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleOpenExternalLink(citation.url)}>
                                 <ExternalLink className="h-3 w-3 mr-2" />
-                                View Citation
+                                Open External Link
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={handleShowAll}>
                                 <Eye className="h-3 w-3 mr-2" />
                                 Show All
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(citation.url)}>
+                              <DropdownMenuItem onClick={() => {
+                                navigator.clipboard.writeText(citation.url);
+                                toast({
+                                  title: "URL Copied",
+                                  description: "Citation URL has been copied to clipboard.",
+                                });
+                              }}>
                                 <Link className="h-3 w-3 mr-2" />
                                 Copy URL
                               </DropdownMenuItem>
@@ -707,6 +731,155 @@ export default function CitationAnalysis() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Citation Details Modal */}
+        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-[#9369F6]" />
+                Citation Details: {selectedCitation?.domain}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedCitation && (
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Basic Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Domain</label>
+                        <p className="text-base font-semibold">{selectedCitation.domain}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Category</label>
+                        <Badge variant="outline">{selectedCitation.category}</Badge>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Status</label>
+                        <Badge className={getStatusColor(selectedCitation.status)}>
+                          {selectedCitation.status}
+                        </Badge>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Authority Score</label>
+                        <p className="text-base font-semibold">{selectedCitation.authority}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Title</label>
+                      <p className="text-base">{selectedCitation.title}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">URL</label>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-blue-600 break-all">{selectedCitation.url}</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenExternalLink(selectedCitation.url)}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Performance Metrics */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Performance Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.citations}</div>
+                        <div className="text-sm text-gray-600">Citations</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.coverage}%</div>
+                        <div className="text-sm text-gray-600">Coverage</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className={`text-2xl font-bold flex items-center justify-center ${
+                          selectedCitation.change > 0 ? 'text-green-600' :
+                          selectedCitation.change < 0 ? 'text-red-600' : 'text-gray-600'
+                        }`}>
+                          {selectedCitation.change > 0 ? (
+                            <ArrowUp className="h-4 w-4 mr-1" />
+                          ) : selectedCitation.change < 0 ? (
+                            <ArrowDown className="h-4 w-4 mr-1" />
+                          ) : null}
+                          {Math.abs(selectedCitation.change)}%
+                        </div>
+                        <div className="text-sm text-gray-600">Change</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.traffic.toLocaleString()}</div>
+                        <div className="text-sm text-gray-600">Traffic</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Additional Details */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Additional Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Last Crawled</label>
+                        <p className="text-base">{format(selectedCitation.lastCrawled, "MMM d, yyyy 'at' HH:mm")}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Sentiment</label>
+                        <Badge className={getSentimentColor(selectedCitation.sentiment)}>
+                          {selectedCitation.sentiment}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    onClick={() => handleOpenExternalLink(selectedCitation.url)}
+                    className="bg-[#9369F6] hover:bg-[#7C3AED]"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Citation
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedCitation.url);
+                      toast({
+                        title: "URL Copied",
+                        description: "Citation URL has been copied to clipboard.",
+                      });
+                    }}
+                  >
+                    <Link className="h-4 w-4 mr-2" />
+                    Copy URL
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewModalOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
