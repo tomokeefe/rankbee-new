@@ -117,7 +117,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
   const handleAttributeToggle = (attribute: string) => {
     if (attribute === "All") {
       const newAttributes: string[] = [];
-      setSelectedAttributes(newAttributes);
+      updatePersistentState({ selectedAttributes: newAttributes });
       updateFilter("attributes", newAttributes);
       return;
     }
@@ -126,7 +126,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
       ? selectedAttributes.filter(a => a !== attribute)
       : [...selectedAttributes, attribute];
 
-    setSelectedAttributes(newAttributes);
+    updatePersistentState({ selectedAttributes: newAttributes });
     updateFilter("attributes", newAttributes);
   };
 
