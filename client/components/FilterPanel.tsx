@@ -351,7 +351,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         {activeDropdown === "model" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {modelOptions.map((model) => {
-              const isSelected = selectedModel === model;
+              const isSelected = model === "All" ? selectedModel === "" : selectedModel === model;
               
               return (
                 <div
