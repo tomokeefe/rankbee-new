@@ -129,7 +129,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   };
 
   return (
-    <div className="fixed left-0 right-0 top-[90px] z-40 bg-[#F3F4F5] border-t border-gray-200">
+    <div className="w-full bg-[#F3F4F5] border-t border-gray-200">
       <div className="max-w-[1600px] mx-auto px-8 py-3">
         {/* Main filter row */}
         <div className="flex items-center gap-[11px]">
