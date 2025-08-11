@@ -158,11 +158,6 @@ export function Header() {
                   </span>
                   <ChevronDown className="w-[18px] h-[18px] text-[#49454F]" />
                 </Button>
-
-                {/* Filter Panel */}
-                {showFilters && (
-                  <FilterPanel onClose={() => setShowFilters(false)} />
-                )}
               </div>
             </div>
           </div>
