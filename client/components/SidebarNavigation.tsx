@@ -46,7 +46,7 @@ export function SidebarNavigation() {
   const location = useLocation();
 
   return (
-    <aside className="sticky top-0 w-64 bg-white border-r border-gray-200 h-screen flex-shrink-0 z-30 hidden lg:block">
+    <aside className="fixed left-0 top-[90px] w-64 bg-white border-r border-gray-200 h-[calc(100vh-90px)] flex-shrink-0 z-30 hidden lg:block">
       <nav className="p-4">
         <div className="space-y-2">
           {navItems.map((item) => {
