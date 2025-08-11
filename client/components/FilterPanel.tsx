@@ -290,19 +290,19 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
                   key={subcategory}
                   onClick={() => handleSubcategoryToggle(subcategory)}
                   className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
-                    isSelected && subcategory !== "All Subcategories"
+                    isSelected && subcategory !== "All"
                       ? 'bg-[#E8DEF8] border-transparent'
                       : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
                   }`}
                 >
                   <div className={`flex items-center gap-2 ${
-                    isSelected && subcategory !== "All Subcategories" ? 'px-2 pr-4' : 'px-4'
+                    isSelected && subcategory !== "All" ? 'px-2 pr-4' : 'px-4'
                   } py-[6px]`}>
-                    {isSelected && subcategory !== "All Subcategories" && (
+                    {isSelected && subcategory !== "All" && (
                       <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
                     )}
                     <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
-                      isSelected && subcategory !== "All Subcategories" ? 'text-[#4A4459]' : 'text-[#49454F]'
+                      isSelected && subcategory !== "All" ? 'text-[#4A4459]' : 'text-[#49454F]'
                     }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
                       {subcategory}
                     </span>
