@@ -146,7 +146,7 @@ function DataTable({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         {exportable && (
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={exportToCSV}>
             <Download className="h-4 w-4" />
             Export CSV
           </Button>
