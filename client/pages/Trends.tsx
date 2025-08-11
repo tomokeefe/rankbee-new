@@ -86,7 +86,7 @@ export default function Trends() {
           </div>
           <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
             <Brain className="h-4 w-4 mr-2" />
-            {isLoadingInsights ? "Generating..." : "Refresh AI Insights"}
+            {isLoadingInsights ? "Generating..." : "Refresh Insights"}
           </Button>
         </div>
 
