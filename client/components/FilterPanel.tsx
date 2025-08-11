@@ -110,7 +110,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   const handleModelSelect = (model: string) => {
     const newModel = selectedModel === model ? "" : model;
     setSelectedModel(newModel);
-    setShowModelDropdown(false);
+    setActiveDropdown(null); // Close dropdown after selection
   };
 
   return (
