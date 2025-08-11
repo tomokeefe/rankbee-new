@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
 import { SidebarNavigation } from "./SidebarNavigation";
+import { useFilterVisibility } from "../contexts/FilterVisibilityContext";
 
 interface DashboardLayoutProps {
   children: ReactNode;
