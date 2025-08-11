@@ -63,7 +63,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   const [selectedModel, setSelectedModel] = useState<string>("");
   
   // Single dropdown state - only one can be open at a time
-  const [activeDropdown, setActiveDropdown] = useState<string | null>("category"); // Default to category open
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Start with no dropdown open
 
   // Calculate total selected filters for badge
   const totalSelectedFilters = selectedCategories.length + selectedSubcategories.length + selectedAttributes.length + (selectedModel ? 1 : 0);
