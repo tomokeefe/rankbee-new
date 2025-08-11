@@ -303,7 +303,8 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
         {activeDropdown === "subcategory" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {subcategoryOptions.map((subcategory) => {
-              const isSelected = subcategory === "All" ? selectedSubcategories.length === 0 : selectedSubcategories.includes(subcategory);
+              const allSubcategoriesSelected = selectedSubcategories.length === subcategoryOptions.filter(sub => sub !== "All").length;
+              const isSelected = subcategory === "All" ? allSubcategoriesSelected : selectedSubcategories.includes(subcategory);
               
               return (
                 <div
