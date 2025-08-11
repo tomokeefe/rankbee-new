@@ -146,14 +146,17 @@ export function Header() {
               <div className="relative">
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="w-8 h-8 p-2 rounded-full hover:bg-gray-100"
+                  className="flex items-center gap-2 h-8 px-2 rounded-full hover:bg-gray-100 border border-[#CAC4D0] bg-[#FEF7FF]"
                   onClick={() => {
                     console.log("Filter button clicked, showFilters:", showFilters);
                     setShowFilters(!showFilters);
                   }}
                 >
-                  <Filter className="w-6 h-6 text-[#71717A]" strokeWidth={1.33} />
+                  <Filter className="w-[18px] h-[18px] text-[#18181B]" strokeWidth={2} />
+                  <span className="text-sm font-medium text-[#49454F]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                    Filters
+                  </span>
+                  <ChevronDown className="w-[18px] h-[18px] text-[#49454F]" />
                 </Button>
 
                 {/* Filter Panel */}
