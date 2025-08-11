@@ -4,6 +4,7 @@ import { useFilterVisibility } from "../contexts/FilterVisibilityContext";
 import { Link } from "react-router-dom";
 import { ChevronDown, Headphones, Filter, Mail, User, Settings, LogOut, HelpCircle, MessageCircle, Phone, MapPin, Menu } from "lucide-react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Select,
