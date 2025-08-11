@@ -231,7 +231,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         </div>
 
         {/* Category chips row */}
-        {showCategoryDropdown && (
+        {activeDropdown === "category" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {categoryOptions.map((category) => {
               const isSelected = category === "All" ? selectedCategories.length === 0 : selectedCategories.includes(category);
