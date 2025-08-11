@@ -158,7 +158,13 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
                 <div className="flex items-center gap-2 px-4 py-[10px]">
                   <CalendarIcon className="h-5 w-5 text-[#18181B]" strokeWidth={2} />
                   <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
-                    Aug 01, 2025 - Sep 02, 2025
+                    {dateRange.from && dateRange.to ? (
+                      `${format(dateRange.from, "MMM dd, yyyy")} - ${format(dateRange.to, "MMM dd, yyyy")}`
+                    ) : dateRange.from ? (
+                      format(dateRange.from, "MMM dd, yyyy")
+                    ) : (
+                      "Select date range"
+                    )}
                   </span>
                 </div>
               </div>
