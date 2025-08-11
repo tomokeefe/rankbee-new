@@ -35,6 +35,7 @@ import {
   Calendar,
   Brain,
   Sparkles,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   Select,
@@ -43,6 +44,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { format } from "date-fns";
 import {
   LineChart,
@@ -79,6 +86,7 @@ export default function CitationAnalysis() {
   const [aiInsights, setAiInsights] = useState<any[]>([]);
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const [showAllData, setShowAllData] = useState(false);
   const { toast } = useToast();
 
   // Get brand-specific citation data
@@ -127,7 +135,23 @@ export default function CitationAnalysis() {
     return true;
   });
 
-  const sortedData = [...filteredData].sort((a, b) => {
+  const handleViewCitation = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShowAll = () => {
+    setShowAllData(true);
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedStatus("all");
+    toast({
+      title: "Showing All Data",
+      description: "All filters have been cleared to show complete citation data.",
+    });
+  };
+
+  const dataToDisplay = showAllData ? citationData : filteredData;
+  const sortedData = [...dataToDisplay].sort((a, b) => {
     const aValue = a[sortField as keyof typeof a];
     const bValue = b[sortField as keyof typeof b];
     const multiplier = sortDirection === "asc" ? 1 : -1;
@@ -200,7 +224,7 @@ export default function CitationAnalysis() {
           </div>
           <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
             <Brain className="h-4 w-4 mr-2" />
-            {isLoadingInsights ? "Generating..." : "Refresh AI Insights"}
+            {isLoadingInsights ? "Generating..." : "Refresh Insights"}
           </Button>
         </div>
 
@@ -550,6 +574,11 @@ export default function CitationAnalysis() {
           <CardHeader>
             <CardTitle>
               {brandName} Citation Details ({sortedData.length} results)
+            {showAllData && (
+              <Badge variant="outline" className="ml-2">
+                Showing All Data
+              </Badge>
+            )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -637,9 +666,37 @@ export default function CitationAnalysis() {
                         {format(citation.lastCrawled, "MMM d, HH:mm")}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewCitation(citation.url)}
+                            title="View Citation"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" title="More Actions">
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewCitation(citation.url)}>
+                                <ExternalLink className="h-3 w-3 mr-2" />
+                                View Citation
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={handleShowAll}>
+                                <Eye className="h-3 w-3 mr-2" />
+                                Show All
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(citation.url)}>
+                                <Link className="h-3 w-3 mr-2" />
+                                Copy URL
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
