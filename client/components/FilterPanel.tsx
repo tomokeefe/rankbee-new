@@ -358,19 +358,19 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
                   key={model}
                   onClick={() => handleModelSelect(model)}
                   className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
-                    isSelected
+                    isSelected && model !== "All"
                       ? 'bg-[#E8DEF8] border-transparent'
                       : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
                   }`}
                 >
                   <div className={`flex items-center gap-2 ${
-                    isSelected ? 'px-2 pr-4' : 'px-4'
+                    isSelected && model !== "All" ? 'px-2 pr-4' : 'px-4'
                   } py-[6px]`}>
-                    {isSelected && (
+                    {isSelected && model !== "All" && (
                       <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
                     )}
                     <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
-                      isSelected ? 'text-[#4A4459]' : 'text-[#49454F]'
+                      isSelected && model !== "All" ? 'text-[#4A4459]' : 'text-[#49454F]'
                     }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
                       {model}
                     </span>
