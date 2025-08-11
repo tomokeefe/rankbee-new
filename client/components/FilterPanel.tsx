@@ -265,7 +265,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         )}
 
         {/* Subcategory chips row */}
-        {showSubcategoryDropdown && (
+        {activeDropdown === "subcategory" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {subcategoryOptions.map((subcategory) => {
               const isSelected = subcategory === "All Subcategories" ? selectedSubcategories.length === 0 : selectedSubcategories.includes(subcategory);
