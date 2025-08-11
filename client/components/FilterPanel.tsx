@@ -317,7 +317,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         {activeDropdown === "attributes" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {attributeOptions.map((attribute) => {
-              const isSelected = selectedAttributes.includes(attribute);
+              const isSelected = attribute === "All" ? selectedAttributes.length === 0 : selectedAttributes.includes(attribute);
               
               return (
                 <div
