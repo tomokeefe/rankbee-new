@@ -120,7 +120,9 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
 
   const handleAttributeToggle = (attribute: string) => {
     if (attribute === "All") {
-      const newAttributes: string[] = [];
+      // Select all attributes (excluding "All" itself)
+      const allAttributes = attributeOptions.filter(attr => attr !== "All");
+      const newAttributes = selectedAttributes.length === allAttributes.length ? [] : allAttributes;
       updatePersistentState({ selectedAttributes: newAttributes });
       updateFilter("attributes", newAttributes);
       return;
