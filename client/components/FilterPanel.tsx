@@ -22,9 +22,9 @@ const categoryOptions = [
 ];
 
 const subcategoryOptions = [
-  "All Subcategories",
+  "All",
   "Traditional Italian",
-  "Modern Italian", 
+  "Modern Italian",
   "Pizza & Pasta",
   "Wine & Dine",
   "Family Style",
@@ -32,8 +32,9 @@ const subcategoryOptions = [
 ];
 
 const attributeOptions = [
+  "All",
   "Pet Friendly",
-  "Outdoor Seating", 
+  "Outdoor Seating",
   "Delivery Available",
   "Reservations",
   "Happy Hour",
@@ -41,6 +42,7 @@ const attributeOptions = [
 ];
 
 const modelOptions = [
+  "All",
   "GPT-4",
   "GPT-3.5",
   "Claude",
