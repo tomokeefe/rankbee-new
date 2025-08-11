@@ -333,7 +333,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         )}
 
         {/* Model chips row */}
-        {showModelDropdown && (
+        {activeDropdown === "model" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {modelOptions.map((model) => {
               const isSelected = selectedModel === model;
