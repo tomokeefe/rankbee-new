@@ -300,20 +300,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <Button
                 variant="outline"
                 className="w-full h-12 flex items-center justify-center gap-2 border-gray-300 hover:border-[#9369F6] hover:bg-purple-50"
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={() => {
+                  setIsFilterOpen(!filters);
+                  onClose(); // Close mobile menu when opening filters
+                }}
               >
                 <Filter className="h-4 w-4" />
-                {showFilters ? "Hide Filters" : "Show Filters"}
+                Open Filters
               </Button>
-
-              {/* Advanced Filter Panel */}
-              {showFilters && (
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <MobileFilterPanel onClose={() => setShowFilters(false)} />
-                  </div>
-                </div>
-              )}
             </div>
           </TabsContent>
 
