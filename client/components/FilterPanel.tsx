@@ -159,7 +159,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
                 ? 'border-[#6750A4] bg-[#E8DEF8]' 
                 : 'border-[#CAC4D0] bg-white hover:border-[#6750A4]'
             }`}
-            onClick={() => updatePersistentState({ activeDropdown: activeDropdown === "category" ? null : "category" })}
+            onClick={() => updateFilter("activeDropdown", activeDropdown === "category" ? null : "category")}
           >
             <div className="flex items-center gap-2 px-4 py-[10px]">
               <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
