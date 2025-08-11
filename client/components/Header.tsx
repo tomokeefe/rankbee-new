@@ -168,7 +168,7 @@ export function Header() {
                 >
                   <Filter className="w-4 h-4" strokeWidth={1.33} />
                   <span className="text-sm font-medium">Filters</span>
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
             </div>
