@@ -176,6 +176,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
                   </span>
                 </div>
               )}
+              <ChevronDown className="h-5 w-5 text-[#49454F]" />
             </div>
           </div>
 
