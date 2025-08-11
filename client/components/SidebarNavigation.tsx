@@ -50,7 +50,7 @@ export function SidebarNavigation() {
   return (
     <aside className={`fixed left-0 w-64 bg-white border-r border-gray-200 flex-shrink-0 z-30 hidden lg:block transition-all duration-200 ${
       isFilterOpen
-        ? 'top-[156px] h-[calc(100vh-156px)]' // 90px header + ~66px filter panel
+        ? 'top-[165px] h-[calc(100vh-165px)]' // 90px header + ~75px filter panel
         : 'top-[90px] h-[calc(100vh-90px)]'   // Just header height
     }`}>
       <nav className="p-4">
