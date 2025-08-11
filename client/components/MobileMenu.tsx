@@ -301,7 +301,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 variant="outline"
                 className="w-full h-12 flex items-center justify-center gap-2 border-gray-300 hover:border-[#9369F6] hover:bg-purple-50"
                 onClick={() => {
-                  setIsFilterOpen(!filters);
+                  setIsFilterOpen(true);
                   onClose(); // Close mobile menu when opening filters
                 }}
               >
