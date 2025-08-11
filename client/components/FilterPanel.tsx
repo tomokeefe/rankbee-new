@@ -144,9 +144,9 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="range"
-                defaultMonth={dateRange.from}
-                selected={dateRange}
-                onSelect={(newDateRange) => updatePersistentState({ dateRange: newDateRange || { from: undefined, to: undefined } })}
+                defaultMonth={filterDateRange.from}
+                selected={filterDateRange}
+                onSelect={(newDateRange) => updateFilter("filterDateRange", newDateRange || { from: undefined, to: undefined })}
                 numberOfMonths={2}
               />
             </PopoverContent>
