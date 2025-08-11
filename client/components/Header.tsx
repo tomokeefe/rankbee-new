@@ -458,7 +458,11 @@ export function Header() {
 
       {/* Filter Panel - pushes content down when open */}
       {showFilters && (
-        <FilterPanel onClose={() => setShowFilters(false)} />
+        <FilterPanel
+          onClose={() => setShowFilters(false)}
+          persistentState={persistentFilterState}
+          onStateChange={setPersistentFilterState}
+        />
       )}
 
       {/* Mobile Menu */}
