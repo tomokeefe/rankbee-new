@@ -54,7 +54,6 @@ const attributeOptions = [
 ];
 
 const modelOptions = [
-  "All",
   "GPT-4",
   "GPT-3.5",
   "Claude",
