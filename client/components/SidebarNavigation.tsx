@@ -43,12 +43,9 @@ const navItems = [
   },
 ];
 
-interface SidebarNavigationProps {
-  isFilterOpen?: boolean;
-}
-
-export function SidebarNavigation({ isFilterOpen = false }: SidebarNavigationProps) {
+export function SidebarNavigation() {
   const location = useLocation();
+  const { isFilterOpen } = useFilterVisibility();
 
   return (
     <aside className={`fixed left-0 w-64 bg-white border-r border-gray-200 flex-shrink-0 z-30 hidden lg:block transition-all duration-200 ${
