@@ -299,7 +299,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
         )}
 
         {/* Attributes chips row */}
-        {showAttributesDropdown && (
+        {activeDropdown === "attributes" && (
           <div className="mt-4 flex flex-wrap gap-[5px]">
             {attributeOptions.map((attribute) => {
               const isSelected = selectedAttributes.includes(attribute);
