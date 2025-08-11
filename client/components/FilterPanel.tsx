@@ -162,7 +162,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
                 mode="range"
                 defaultMonth={dateRange.from}
                 selected={dateRange}
-                onSelect={setDateRange}
+                onSelect={(newDateRange) => updatePersistentState({ dateRange: newDateRange || { from: undefined, to: undefined } })}
                 numberOfMonths={2}
               />
             </PopoverContent>
