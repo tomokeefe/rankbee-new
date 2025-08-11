@@ -162,8 +162,8 @@ export function Header() {
                   variant="ghost"
                   className="h-10 px-4 text-[#9369F6] hover:text-purple-700 hover:bg-purple-50 gap-2"
                   onClick={() => {
-                    console.log("Filter button clicked, showFilters:", showFilters);
-                    setShowFilters(!showFilters);
+                    console.log("Filter button clicked, isFilterOpen:", isFilterOpen);
+                    setIsFilterOpen(!isFilterOpen);
                   }}
                 >
                   <Filter className="w-4 h-4" strokeWidth={1.33} />
