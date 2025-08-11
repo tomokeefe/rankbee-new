@@ -117,6 +117,30 @@ function DataTable({
       : String(bValue).localeCompare(String(aValue));
   });
 
+  const exportToCSV = () => {
+    const headers = columns.map(col => col.label).join(',');
+    const rows = sortedData.map(row =>
+      columns.map(col => {
+        const value = row[col.key];
+        // Handle values that might contain commas
+        return typeof value === 'string' && value.includes(',')
+          ? `"${value}"`
+          : value;
+      }).join(',')
+    );
+
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title.toLowerCase().replace(/\s+/g, '_')}_export.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
