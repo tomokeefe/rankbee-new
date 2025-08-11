@@ -77,6 +77,12 @@ export function Header() {
   const selectedBrand = activeBrands.find((brand) => brand.value === filters.brand);
   const displayName = selectedBrand?.label || (activeBrands.length > 0 ? activeBrands[0].label : "No Brands");
 
+  // Calculate total selected filters for badge
+  const totalSelectedFilters = (filters.selectedCategories?.length || 0) +
+                              (filters.selectedSubcategories?.length || 0) +
+                              (filters.selectedAttributes?.length || 0) +
+                              (filters.selectedModel ? 1 : 0);
+
   return (
     <>
       <header className="bg-white h-[90px] shadow-md sticky top-0 z-40">
