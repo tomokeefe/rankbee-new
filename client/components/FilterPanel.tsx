@@ -85,17 +85,17 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
   };
 
   const handleSubcategoryToggle = (subcategory: string) => {
-    if (subcategory === "All Subcategories") {
+    if (subcategory === "All") {
       const newSubcategories: string[] = [];
       setSelectedSubcategories(newSubcategories);
       updateFilter("subcategory", newSubcategories);
       return;
     }
-    
+
     const newSubcategories = selectedSubcategories.includes(subcategory)
       ? selectedSubcategories.filter(s => s !== subcategory)
       : [...selectedSubcategories, subcategory];
-    
+
     setSelectedSubcategories(newSubcategories);
     updateFilter("subcategory", newSubcategories);
   };
