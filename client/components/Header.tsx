@@ -456,9 +456,9 @@ export function Header() {
       </header>
 
       {/* Filter Panel - pushes content down when open */}
-      {showFilters && (
+      {isFilterOpen && (
         <FilterPanel
-          onClose={() => setShowFilters(false)}
+          onClose={() => setIsFilterOpen(false)}
           persistentState={persistentFilterState}
           onStateChange={setPersistentFilterState}
         />
