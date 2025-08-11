@@ -85,8 +85,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       // Select all subcategories (excluding "All" itself)
       const allSubcategories = subcategoryOptions.filter(sub => sub !== "All");
       const newSubcategories = selectedSubcategories.length === allSubcategories.length ? [] : allSubcategories;
-      updatePersistentState({ selectedSubcategories: newSubcategories });
-      updateFilter("subcategory", newSubcategories);
+      updateFilter("selectedSubcategories", newSubcategories);
       return;
     }
 
@@ -94,8 +93,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       ? selectedSubcategories.filter(s => s !== subcategory)
       : [...selectedSubcategories, subcategory];
 
-    updatePersistentState({ selectedSubcategories: newSubcategories });
-    updateFilter("subcategory", newSubcategories);
+    updateFilter("selectedSubcategories", newSubcategories);
   };
 
   const handleAttributeToggle = (attribute: string) => {
@@ -103,8 +101,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       // Select all attributes (excluding "All" itself)
       const allAttributes = attributeOptions.filter(attr => attr !== "All");
       const newAttributes = selectedAttributes.length === allAttributes.length ? [] : allAttributes;
-      updatePersistentState({ selectedAttributes: newAttributes });
-      updateFilter("attributes", newAttributes);
+      updateFilter("selectedAttributes", newAttributes);
       return;
     }
 
@@ -112,13 +109,13 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       ? selectedAttributes.filter(a => a !== attribute)
       : [...selectedAttributes, attribute];
 
-    updatePersistentState({ selectedAttributes: newAttributes });
-    updateFilter("attributes", newAttributes);
+    updateFilter("selectedAttributes", newAttributes);
   };
 
   const handleModelSelect = (model: string) => {
     const newModel = selectedModel === model ? "" : model;
-    updatePersistentState({ selectedModel: newModel, activeDropdown: null });
+    updateFilter("selectedModel", newModel);
+    updateFilter("activeDropdown", null);
   };
 
   return (
