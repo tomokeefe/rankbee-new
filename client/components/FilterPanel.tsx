@@ -85,16 +85,16 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
   const handleCategoryToggle = (category: string) => {
     if (category === "All") {
       const newCategories: string[] = [];
-      setSelectedCategories(newCategories);
+      updatePersistentState({ selectedCategories: newCategories });
       updateFilter("category", newCategories);
       return;
     }
-    
+
     const newCategories = selectedCategories.includes(category)
       ? selectedCategories.filter(c => c !== category)
       : [...selectedCategories, category];
-    
-    setSelectedCategories(newCategories);
+
+    updatePersistentState({ selectedCategories: newCategories });
     updateFilter("category", newCategories);
   };
 
