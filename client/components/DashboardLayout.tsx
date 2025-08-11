@@ -11,7 +11,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <SidebarNavigation />
-      <main className="lg:ml-64 min-h-[calc(100vh-90px)]">
+      <main className="lg:ml-64 pt-16 min-h-[calc(100vh-90px)]">
         {children}
       </main>
     </div>
