@@ -163,6 +163,11 @@ export function Header() {
                 >
                   <Filter className="w-4 h-4" strokeWidth={1.33} />
                   <span className="text-sm font-medium">Filters</span>
+                  {totalSelectedFilters > 0 && (
+                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs bg-[#6750A4] text-white">
+                      {totalSelectedFilters}
+                    </Badge>
+                  )}
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} />
                 </Button>
               </div>
