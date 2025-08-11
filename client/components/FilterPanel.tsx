@@ -54,8 +54,8 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     to: new Date(2025, 8, 2)   // Sep 02, 2025
   });
   
-  // Multi-select state for all filter types
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(["Italian Restaurant", "Casual Dining"]);
+  // Multi-select state for all filter types - start with no selections
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>("");
