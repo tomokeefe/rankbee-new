@@ -69,8 +69,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       // Select all categories (excluding "All" itself)
       const allCategories = categoryOptions.filter(cat => cat !== "All");
       const newCategories = selectedCategories.length === allCategories.length ? [] : allCategories;
-      updatePersistentState({ selectedCategories: newCategories });
-      updateFilter("category", newCategories);
+      updateFilter("selectedCategories", newCategories);
       return;
     }
 
@@ -78,8 +77,7 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
       ? selectedCategories.filter(c => c !== category)
       : [...selectedCategories, category];
 
-    updatePersistentState({ selectedCategories: newCategories });
-    updateFilter("category", newCategories);
+    updateFilter("selectedCategories", newCategories);
   };
 
   const handleSubcategoryToggle = (subcategory: string) => {
