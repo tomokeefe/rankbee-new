@@ -61,21 +61,23 @@ const modelOptions = [
   "Gemini"
 ];
 
-export function FilterPanel({ onClose }: FilterPanelProps) {
+export function FilterPanel({ onClose, persistentState, onStateChange }: FilterPanelProps) {
   const { filters, updateFilter } = useFilters();
-  const [dateRange, setDateRange] = useState<{from: Date | undefined, to: Date | undefined}>({
-    from: new Date(2025, 7, 1), // Aug 01, 2025
-    to: new Date(2025, 8, 2)   // Sep 02, 2025
-  });
-  
-  // Multi-select state for all filter types - start with no selections
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([]);
-  const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>("");
-  
-  // Single dropdown state - only one can be open at a time
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Start with no dropdown open
+
+  // Use persistent state from parent
+  const {
+    selectedCategories,
+    selectedSubcategories,
+    selectedAttributes,
+    selectedModel,
+    activeDropdown,
+    dateRange
+  } = persistentState;
+
+  // Helper function to update persistent state
+  const updatePersistentState = (updates: Partial<typeof persistentState>) => {
+    onStateChange({ ...persistentState, ...updates });
+  };
 
   // Calculate total selected filters for badge
   const totalSelectedFilters = selectedCategories.length + selectedSubcategories.length + selectedAttributes.length + (selectedModel ? 1 : 0);
