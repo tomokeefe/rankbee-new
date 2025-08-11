@@ -22,16 +22,12 @@ import {
   SelectValue,
 } from "./ui/select";
 import { FilterPanel } from "./FilterPanel";
+import { useFilterVisibility } from "../contexts/FilterVisibilityContext";
 
 // Mobile-specific filter panel component
 function MobileFilterPanel({ onClose }: { onClose: () => void }) {
   const { filters, updateFilter } = useFilters();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    Array.isArray(filters.category) ? filters.category : filters.category ? [filters.category] : []
-  );
-  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(
-    Array.isArray(filters.subcategory) ? filters.subcategory : filters.subcategory ? [filters.subcategory] : []
-  );
+  const { setIsFilterOpen } = useFilterVisibility();
 
   // Sample data
   const categoryOptions = [
