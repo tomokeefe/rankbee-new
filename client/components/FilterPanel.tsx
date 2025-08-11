@@ -101,7 +101,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
   const handleSubcategoryToggle = (subcategory: string) => {
     if (subcategory === "All") {
       const newSubcategories: string[] = [];
-      setSelectedSubcategories(newSubcategories);
+      updatePersistentState({ selectedSubcategories: newSubcategories });
       updateFilter("subcategory", newSubcategories);
       return;
     }
@@ -110,7 +110,7 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
       ? selectedSubcategories.filter(s => s !== subcategory)
       : [...selectedSubcategories, subcategory];
 
-    setSelectedSubcategories(newSubcategories);
+    updatePersistentState({ selectedSubcategories: newSubcategories });
     updateFilter("subcategory", newSubcategories);
   };
 
