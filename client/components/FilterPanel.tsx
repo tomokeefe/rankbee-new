@@ -132,14 +132,12 @@ export function FilterPanel({ onClose, persistentState, onStateChange }: FilterP
 
   const handleModelSelect = (model: string) => {
     if (model === "All") {
-      setSelectedModel("");
-      setActiveDropdown(null);
+      updatePersistentState({ selectedModel: "", activeDropdown: null });
       return;
     }
 
     const newModel = selectedModel === model ? "" : model;
-    setSelectedModel(newModel);
-    setActiveDropdown(null); // Close dropdown after selection
+    updatePersistentState({ selectedModel: newModel, activeDropdown: null });
   };
 
   return (
