@@ -447,8 +447,6 @@ export function Header() {
       {isFilterOpen && (
         <FilterPanel
           onClose={() => setIsFilterOpen(false)}
-          persistentState={persistentFilterState}
-          onStateChange={setPersistentFilterState}
         />
       )}
 
