@@ -23,24 +23,26 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <FilterProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/categories" element={<CategoryOverview />} />
-            <Route path="/trends" element={<Trends />} />
-            <Route path="/visibility" element={<Visibility />} />
-            <Route path="/brands" element={<BrandOverview />} />
-            <Route path="/prompts" element={<PromptDeepDive />} />
-            <Route path="/citations" element={<CitationAnalysis />} />
-            <Route path="/settings" element={<Settings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <FilterVisibilityProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/categories" element={<CategoryOverview />} />
+              <Route path="/trends" element={<Trends />} />
+              <Route path="/visibility" element={<Visibility />} />
+              <Route path="/brands" element={<BrandOverview />} />
+              <Route path="/prompts" element={<PromptDeepDive />} />
+              <Route path="/citations" element={<CitationAnalysis />} />
+              <Route path="/settings" element={<Settings />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </FilterVisibilityProvider>
     </FilterProvider>
   </QueryClientProvider>
 );
