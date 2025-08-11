@@ -48,6 +48,19 @@ export function Header() {
     priority: "medium"
   });
 
+  // Persistent filter state that survives panel open/close
+  const [persistentFilterState, setPersistentFilterState] = useState({
+    selectedCategories: [] as string[],
+    selectedSubcategories: [] as string[],
+    selectedAttributes: [] as string[],
+    selectedModel: "",
+    activeDropdown: null as string | null,
+    dateRange: {
+      from: new Date(2025, 7, 1), // Aug 01, 2025
+      to: new Date(2025, 8, 2)   // Sep 02, 2025
+    }
+  });
+
   const handleBrandChange = (value: string) => {
     updateFilter("brand", value);
   };
