@@ -58,13 +58,35 @@ Focus on understanding what the user is looking for and how it relates to brand 
       }),
     });
 
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock analysis");
+      return generateMockAnalysis(prompt, brandName);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error details:", response.status, errorText);
       throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
+    // Clone the response before any read operations
+    const responseClone = response.clone();
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      try {
+        const text = await responseClone.text();
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Invalid JSON response from API");
+      } catch (cloneError) {
+        console.error("Failed to read response as text:", cloneError);
+        throw new Error("Unable to read API response");
+      }
+    }
 
     if (!data.candidates || !data.candidates[0]) {
       throw new Error("No candidates in AI response");
@@ -96,6 +118,225 @@ Focus on understanding what the user is looking for and how it relates to brand 
     console.error("Error analyzing prompt:", error);
     // Fallback analysis if AI fails
     return generateMockAnalysis(prompt, brandName);
+  }
+}
+
+export interface DashboardInsight {
+  id: string;
+  type: 'trend' | 'anomaly' | 'opportunity' | 'alert';
+  title: string;
+  description: string;
+  significance: 'high' | 'medium' | 'low';
+  actionable: boolean;
+  suggestedActions: string[];
+  confidence: number;
+  timestamp: Date;
+  dataContext: any;
+}
+
+export interface ChatQuery {
+  id: string;
+  query: string;
+  response: string;
+  timestamp: Date;
+  confidence: number;
+  suggestedFollowUp: string[];
+}
+
+export async function analyzeDashboardData(data: any, brandName: string): Promise<DashboardInsight[]> {
+  try {
+    const analysisPrompt = `
+Analyze this brand dashboard data for ${brandName} and provide actionable insights:
+
+Data: ${JSON.stringify(data, null, 2)}
+
+Please provide insights as a JSON array of objects with this structure:
+[
+  {
+    "type": "trend|anomaly|opportunity|alert",
+    "title": "Brief insight title",
+    "description": "Detailed explanation of the insight",
+    "significance": "high|medium|low",
+    "actionable": true/false,
+    "suggestedActions": ["Action 1", "Action 2"],
+    "confidence": 0.0-1.0
+  }
+]
+
+Focus on:
+- Performance trends and patterns
+- Unusual changes or anomalies
+- Growth opportunities
+- Actionable recommendations
+- Competitive positioning insights
+
+Limit to 5-8 most significant insights.
+`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: analysisPrompt,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock insights");
+      return generateMockInsights(brandName);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini API error details:", response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+    }
+
+    // Clone the response before any read operations
+    const responseClone = response.clone();
+
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      try {
+        const text = await responseClone.text();
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Invalid JSON response from API");
+      } catch (cloneError) {
+        console.error("Failed to read response as text:", cloneError);
+        throw new Error("Unable to read API response");
+      }
+    }
+
+    const aiResponse = responseData.candidates[0].content.parts[0].text;
+
+    const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error("Invalid JSON response from AI");
+    }
+
+    const insights = JSON.parse(jsonMatch[0]);
+
+    return insights.map((insight: any) => ({
+      id: generateId(),
+      type: insight.type,
+      title: insight.title,
+      description: insight.description,
+      significance: insight.significance,
+      actionable: insight.actionable,
+      suggestedActions: insight.suggestedActions,
+      confidence: insight.confidence,
+      timestamp: new Date(),
+      dataContext: data
+    }));
+  } catch (error) {
+    console.error("Error analyzing dashboard data:", error);
+    return generateMockInsights(brandName);
+  }
+}
+
+export async function processNaturalLanguageQuery(query: string, dashboardData: any): Promise<ChatQuery> {
+  try {
+    const queryPrompt = `
+User question about their brand dashboard data: "${query}"
+
+Dashboard context: ${JSON.stringify(dashboardData, null, 2)}
+
+Please provide a helpful response that:
+1. Directly answers the user's question using the available data
+2. Provides specific numbers/metrics when possible
+3. Explains any trends or patterns relevant to their question
+4. Suggests related insights they might find valuable
+
+Respond in this JSON format:
+{
+  "response": "Your detailed answer to the user's question",
+  "confidence": 0.0-1.0,
+  "suggestedFollowUp": ["Question 1", "Question 2", "Question 3"]
+}
+`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: queryPrompt,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock response");
+      return generateMockChatResponse(query);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini API error details:", response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+    }
+
+    // Clone the response before any read operations
+    const responseClone = response.clone();
+
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      try {
+        const text = await responseClone.text();
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Invalid JSON response from API");
+      } catch (cloneError) {
+        console.error("Failed to read response as text:", cloneError);
+        throw new Error("Unable to read API response");
+      }
+    }
+
+    const aiResponse = responseData.candidates[0].content.parts[0].text;
+
+    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("Invalid JSON response from AI");
+    }
+
+    const parsedResponse = JSON.parse(jsonMatch[0]);
+
+    return {
+      id: generateId(),
+      query,
+      response: parsedResponse.response,
+      timestamp: new Date(),
+      confidence: parsedResponse.confidence,
+      suggestedFollowUp: parsedResponse.suggestedFollowUp
+    };
+  } catch (error) {
+    console.error("Error processing natural language query:", error);
+    return generateMockChatResponse(query);
   }
 }
 
@@ -134,13 +375,35 @@ Return as a simple JSON array of strings.
       }),
     });
 
+    // Handle quota exceeded error immediately without reading body
+    if (response.status === 429) {
+      console.warn("Gemini API quota exceeded, falling back to mock suggestions");
+      return generateMockSuggestions(brandName, category);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Gemini API error details:", response.status, errorText);
       throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
+    // Clone the response before any read operations
+    const responseClone = response.clone();
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, try reading as text for debugging
+      try {
+        const text = await responseClone.text();
+        console.error("Failed to parse JSON response:", text);
+        throw new Error("Invalid JSON response from API");
+      } catch (cloneError) {
+        console.error("Failed to read response as text:", cloneError);
+        throw new Error("Unable to read API response");
+      }
+    }
 
     if (!data.candidates || !data.candidates[0]) {
       throw new Error("No candidates in AI response");
@@ -363,6 +626,74 @@ function generateMockSuggestions(
   // Return 10 random suggestions
   const shuffled = allSuggestions.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, 10);
+}
+
+function generateMockInsights(brandName: string): DashboardInsight[] {
+  return [
+    {
+      id: generateId(),
+      type: 'trend',
+      title: `${brandName} showing strong engagement growth`,
+      description: 'Brand engagement has increased by 18% over the past 30 days, with particularly strong performance in visual content.',
+      significance: 'high',
+      actionable: true,
+      suggestedActions: [
+        'Increase visual content production',
+        'Analyze top-performing content themes',
+        'Expand successful content formats'
+      ],
+      confidence: 0.89,
+      timestamp: new Date(),
+      dataContext: { metric: 'engagement', trend: 'up', change: 0.18 }
+    },
+    {
+      id: generateId(),
+      type: 'opportunity',
+      title: 'Untapped evening audience potential',
+      description: 'Data shows 23% lower engagement during 6-9 PM compared to industry benchmarks, suggesting opportunity for targeted evening campaigns.',
+      significance: 'medium',
+      actionable: true,
+      suggestedActions: [
+        'Launch evening-focused campaigns',
+        'Create dinner-time content',
+        'Test promotional timing'
+      ],
+      confidence: 0.76,
+      timestamp: new Date(),
+      dataContext: { timeframe: 'evening', gap: 0.23 }
+    },
+    {
+      id: generateId(),
+      type: 'anomaly',
+      title: 'Unusual weekend performance dip',
+      description: 'Weekend engagement dropped 12% below normal patterns, which is atypical for restaurant brands.',
+      significance: 'medium',
+      actionable: true,
+      suggestedActions: [
+        'Investigate weekend content strategy',
+        'Review competitor weekend activity',
+        'Adjust posting schedule'
+      ],
+      confidence: 0.82,
+      timestamp: new Date(),
+      dataContext: { period: 'weekend', change: -0.12 }
+    }
+  ];
+}
+
+function generateMockChatResponse(query: string): ChatQuery {
+  return {
+    id: generateId(),
+    query,
+    response: `Based on your dashboard data, I can see that your brand metrics show interesting patterns. ${query.includes('engagement') ? 'Your engagement rates are currently trending upward with a 15% increase this month.' : 'The data suggests strong performance across key metrics.'} This indicates positive brand momentum and audience connection.`,
+    timestamp: new Date(),
+    confidence: 0.75,
+    suggestedFollowUp: [
+      'What factors are driving this trend?',
+      'How does this compare to competitors?',
+      'What actions should I take next?'
+    ]
+  };
 }
 
 // Mock data for initial display

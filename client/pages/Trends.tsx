@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
-import { getBrandVisibilityData, generateVisibilityInsights, getBrandDisplayName } from "../services/visibilityService";
+import { getBrandTrendsData, generateTrendsInsights, getBrandDisplayName } from "../services/trendsService";
 import { useToast } from "../hooks/use-toast";
 import {
   Card,
@@ -11,13 +11,12 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { Progress } from "../components/ui/progress";
 import {
   ArrowUp,
   ArrowDown,
-  Eye,
   TrendingUp,
-  Target,
+  Calendar,
+  Users,
   Globe,
   Brain,
   Sparkles,
@@ -39,14 +38,14 @@ import {
   Cell,
 } from "recharts";
 
-export default function Visibility() {
+export default function Trends() {
   const { filters, brands } = useFilters();
   const [aiInsights, setAiInsights] = useState<any[]>([]);
   const [isLoadingInsights, setIsLoadingInsights] = useState(false);
   const [isUsingFallback, setIsUsingFallback] = useState(false);
   const { toast } = useToast();
 
-  const visibilityData = getBrandVisibilityData(filters.brand);
+  const trendsData = getBrandTrendsData(filters.brand);
   const brandName = getBrandDisplayName(filters.brand);
 
   useEffect(() => {
@@ -57,7 +56,7 @@ export default function Visibility() {
     setIsLoadingInsights(true);
     setIsUsingFallback(false);
     try {
-      const insights = await generateVisibilityInsights(filters.brand);
+      const insights = await generateTrendsInsights(filters.brand);
       setAiInsights(insights);
     } catch (error) {
       console.error("Error loading AI insights:", error);
@@ -82,8 +81,8 @@ export default function Visibility() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#9369F6]">Visibility Analysis</h1>
-            <p className="text-gray-600">Search visibility gaps for {brandName}</p>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Trends Analysis</h1>
+            <p className="text-gray-600">Market trends and insights for {brandName}</p>
           </div>
           <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
             <Brain className="h-4 w-4 mr-2" />
@@ -97,31 +96,15 @@ export default function Visibility() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Overall Visibility
-              </CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{visibilityData.overallVisibility}%</div>
-              <div className="flex items-center text-xs text-green-600">
-                <ArrowUp className="h-3 w-3 mr-1" />
-                +5.2% from last month
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Search Impressions
+                Trending Score
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{(visibilityData.searchImpressions / 1000).toFixed(1)}K</div>
+              <div className="text-2xl font-bold">{trendsData.trendingScore}/10</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
-                +12.3% from last month
+                +1.2 from last month
               </div>
             </CardContent>
           </Card>
@@ -129,15 +112,15 @@ export default function Visibility() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Click-Through Rate
+                Trend Velocity
               </CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{visibilityData.clickThroughRate}%</div>
+              <div className="text-2xl font-bold">+{trendsData.trendVelocity}%</div>
               <div className="flex items-center text-xs text-green-600">
                 <ArrowUp className="h-3 w-3 mr-1" />
-                +0.8% from last month
+                Accelerating trend growth
               </div>
             </CardContent>
           </Card>
@@ -145,15 +128,31 @@ export default function Visibility() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Market Share
+                Audience Growth
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{(trendsData.audienceGrowth / 1000).toFixed(1)}K</div>
+              <div className="flex items-center text-xs text-green-600">
+                <ArrowUp className="h-3 w-3 mr-1" />
+                +12% new followers
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Market Position
               </CardTitle>
               <Globe className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{visibilityData.marketShare}%</div>
-              <div className="flex items-center text-xs text-red-600">
-                <ArrowDown className="h-3 w-3 mr-1" />
-                -1.2% from last month
+              <div className="text-2xl font-bold">#{trendsData.marketPosition}</div>
+              <div className="flex items-center text-xs text-green-600">
+                <ArrowUp className="h-3 w-3 mr-1" />
+                Up 2 positions
               </div>
             </CardContent>
           </Card>
@@ -179,7 +178,7 @@ export default function Visibility() {
               <p className="text-xs text-gray-500">
                 {isUsingFallback
                   ? "Sample insights shown (AI analysis quota exceeded)"
-                  : "AI-powered insights from your visibility performance data"
+                  : "AI-powered insights from your trend performance data"
                 }
               </p>
             </CardHeader>
@@ -232,15 +231,15 @@ export default function Visibility() {
           </Card>
         )}
 
-        {/* Visibility Trends Chart */}
+        {/* Trend Analysis Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Visibility Trends Over Time for {brandName}</CardTitle>
+            <CardTitle>Trend Analysis Over Time for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={visibilityData.trends}>
+                <AreaChart data={trendsData.trends}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="month"
@@ -250,16 +249,6 @@ export default function Visibility() {
                     axisLine={{ stroke: "hsl(var(--muted-foreground))" }}
                   />
                   <YAxis
-                    yAxisId="left"
-                    type="number"
-                    domain={["dataMin", "dataMax"]}
-                    tick={{ fontSize: 12 }}
-                    tickLine={{ stroke: "hsl(var(--muted-foreground))" }}
-                    axisLine={{ stroke: "hsl(var(--muted-foreground))" }}
-                  />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
                     type="number"
                     domain={["dataMin", "dataMax"]}
                     tick={{ fontSize: 12 }}
@@ -269,21 +258,19 @@ export default function Visibility() {
                   <Tooltip />
                   <Area
                     type="monotone"
-                    dataKey="visibility"
+                    dataKey="engagement"
                     stroke="#8b5cf6"
                     fill="#8b5cf6"
-                    fillOpacity={0.1}
-                    name="Visibility %"
-                    yAxisId="left"
+                    fillOpacity={0.2}
+                    name="Engagement %"
                   />
                   <Area
                     type="monotone"
-                    dataKey="impressions"
+                    dataKey="sentiment"
                     stroke="#06b6d4"
                     fill="#06b6d4"
                     fillOpacity={0.1}
-                    name="Impressions"
-                    yAxisId="right"
+                    name="Sentiment Score"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -292,32 +279,34 @@ export default function Visibility() {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Platform Performance */}
+          {/* Top Trending Topics */}
           <Card>
             <CardHeader>
-              <CardTitle>Platform Performance for {brandName}</CardTitle>
+              <CardTitle>Top Trending Topics for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {visibilityData.platforms.map((platform) => (
+                {trendsData.topTrends.map((trend, index) => (
                   <div
-                    key={platform.platform}
-                    className="flex items-center justify-between"
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: platform.color }}
-                      />
-                      <span className="font-medium">{platform.platform}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-32">
-                        <Progress value={platform.visibility} className="h-2" />
+                      <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-xs font-bold text-purple-600">
+                        {index + 1}
                       </div>
-                      <span className="text-sm font-medium w-10 text-right">
-                        {platform.visibility}%
-                      </span>
+                      <div>
+                        <div className="font-medium">{trend.trend}</div>
+                        <div className="text-sm text-gray-600">
+                          {trend.category}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center text-green-600 text-sm">
+                        <ArrowUp className="h-3 w-3" />
+                        {trend.growth}%
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -325,54 +314,40 @@ export default function Visibility() {
             </CardContent>
           </Card>
 
-          {/* Competitor Analysis */}
+          {/* Sentiment Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>Competitive Landscape</CardTitle>
+              <CardTitle>Sentiment Distribution for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {visibilityData.competitors.map((competitor, index) => (
-                  <div
-                    key={competitor.name}
-                    className={`flex items-center justify-between p-3 rounded-lg ${
-                      competitor.name === "Your Brand" 
-                        ? "bg-[#9369F6]/10 border border-[#9369F6]/30" 
-                        : "bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        competitor.name === "Your Brand"
-                          ? "bg-[#9369F6] text-white"
-                          : "bg-purple-100 text-purple-600"
-                      }`}>
-                        {competitor.rank}
-                      </div>
-                      <div>
-                        <div className={`font-medium ${
-                          competitor.name === "Your Brand" ? "text-[#9369F6]" : ""
-                        }`}>
-                          {competitor.name === "Your Brand" ? brandName : competitor.name}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {competitor.visibility}% visibility
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {competitor.change > 0 ? (
-                        <div className="flex items-center text-green-600 text-sm">
-                          <ArrowUp className="h-3 w-3" />
-                          {competitor.change}
-                        </div>
-                      ) : (
-                        <div className="flex items-center text-red-600 text-sm">
-                          <ArrowDown className="h-3 w-3" />
-                          {Math.abs(competitor.change)}
-                        </div>
-                      )}
-                    </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={trendsData.sentimentData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {trendsData.sentimentData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-4 mt-4">
+                {trendsData.sentimentData.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm">
+                      {item.name} ({item.value}%)
+                    </span>
                   </div>
                 ))}
               </div>
@@ -380,30 +355,27 @@ export default function Visibility() {
           </Card>
         </div>
 
-        {/* Keyword Categories Performance */}
+        {/* Emerging Keywords */}
         <Card>
           <CardHeader>
-            <CardTitle>Keyword Category Performance for {brandName}</CardTitle>
+            <CardTitle>Emerging Keywords for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {visibilityData.keywordCategories.map((category) => (
-                <div key={category.category} className="p-4 border rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {trendsData.emergingKeywords.map((keyword, index) => (
+                <div key={index} className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">{category.category}</h4>
-                    <Badge variant="secondary">{category.visibility}%</Badge>
+                    <h4 className="font-medium text-sm">{keyword.keyword}</h4>
+                    <Badge 
+                      variant="secondary" 
+                      className={keyword.change > 0 ? 'text-green-600' : 'text-red-600'}
+                    >
+                      {keyword.change > 0 ? '+' : ''}{keyword.change}%
+                    </Badge>
                   </div>
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Keywords:</span>
-                      <span>{category.keywords.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Avg Position:</span>
-                      <span>{category.avgPosition}</span>
-                    </div>
+                  <div className="text-sm text-gray-600">
+                    {keyword.searches.toLocaleString()} searches
                   </div>
-                  <Progress value={category.visibility} className="h-2 mt-3" />
                 </div>
               ))}
             </div>

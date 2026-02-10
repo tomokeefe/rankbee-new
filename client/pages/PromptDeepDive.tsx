@@ -51,7 +51,7 @@ const sentimentIcons = {
 };
 
 export default function PromptDeepDive() {
-  const { filters } = useFilters();
+  const { filters, brands } = useFilters();
   const [prompts, setPrompts] = useState<PromptAnalysis[]>(mockPromptAnalyses);
   const [newPrompt, setNewPrompt] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -60,15 +60,9 @@ export default function PromptDeepDive() {
   const [filterSentiment, setFilterSentiment] = useState<string>("all");
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
 
-  const brandName = filters.brand
-    ? filters.brand === "olive-garden"
-      ? "Olive Garden"
-      : filters.brand === "maggianos"
-        ? "Maggiano's"
-        : filters.brand === "darden"
-          ? "Darden"
-          : "Your Brand"
-    : "Your Brand";
+  // Get brand name from the brands array in FilterContext
+  const selectedBrand = brands.find(brand => brand.value === filters.brand);
+  const brandName = selectedBrand?.label || "Your Brand";
 
   useEffect(() => {
     // Load suggestions when component mounts
@@ -143,7 +137,15 @@ export default function PromptDeepDive() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1240px] mx-auto px-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Prompt Analysis</h1>
+            <p className="text-gray-600">Analyze search prompts and user intent for {brandName}</p>
+          </div>
+        </div>
+
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>

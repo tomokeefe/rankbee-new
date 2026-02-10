@@ -1,31 +1,19 @@
 import { useState } from "react";
-import { Filter, CalendarDays, X, ChevronDown } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronDown, Check } from "lucide-react";
 import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { Badge } from "./ui/badge";
-import { cn } from "../lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Calendar } from "./ui/calendar";
+import { format } from "date-fns";
+import { useFilters } from "../contexts/FilterContext";
 
-// Sample data - in a real app this would come from an API
-const brandOptions = [
-  "All Brands",
-  "Olive Garden",
-  "Maggiano's Little Italy",
-  "Romano's Macaroni Grill",
-  "Carrabba's Italian Grill",
-  "Buca di Beppo",
-  "Tony Roma's",
-  "Cheesecake Factory",
-];
+interface FilterPanelProps {
+  onClose: () => void;
+}
 
+// Sample data matching the Figma designs
 const categoryOptions = [
-  "All Categories",
-  "Italian Restaurant",
+  "All",
+  "Italian Restaurant", 
   "Casual Dining",
   "Family Restaurant",
   "Chain Restaurant",
@@ -34,7 +22,7 @@ const categoryOptions = [
 ];
 
 const subcategoryOptions = [
-  "All Subcategories",
+  "All",
   "Traditional Italian",
   "Modern Italian",
   "Pizza & Pasta",
@@ -44,320 +32,355 @@ const subcategoryOptions = [
 ];
 
 const attributeOptions = [
-  "All Attributes",
+  "All",
   "Pet Friendly",
   "Outdoor Seating",
   "Delivery Available",
   "Reservations",
   "Happy Hour",
   "Private Dining",
-  "Vegetarian Options",
-  "Gluten Free",
-  "Live Music",
 ];
 
-interface FilterState {
-  dateRange: string;
-  brand: string;
-  category: string;
-  subcategory: string;
-  attributes: string[];
-}
+const modelOptions = [
+  "GPT-4",
+  "GPT-3.5",
+  "Claude",
+  "Gemini"
+];
 
-export function FilterPanel() {
-  const [filters, setFilters] = useState<FilterState>({
-    dateRange: "Jul 31 - Aug 3, 2025",
-    brand: "Olive Garden",
-    category: "Italian Restaurant",
-    subcategory: "",
-    attributes: [],
-  });
+export function FilterPanel({ onClose }: FilterPanelProps) {
+  const { filters, updateFilter } = useFilters();
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Use filter state from context
+  const {
+    selectedCategories,
+    selectedSubcategories,
+    selectedAttributes,
+    selectedModel,
+    activeDropdown,
+    filterDateRange
+  } = filters;
 
-  const handleToggleExpanded = () => {
-    console.log("Filter panel toggle clicked, current state:", isExpanded);
-    setIsExpanded(!isExpanded);
-  };
+  // Calculate total selected filters for badge
+  const totalSelectedFilters = selectedCategories.length + selectedSubcategories.length + selectedAttributes.length + (selectedModel ? 1 : 0);
 
-  const updateFilter = (key: keyof FilterState, value: string | string[]) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  const addAttribute = (attribute: string) => {
-    if (attribute === "All Attributes") return;
-    if (!filters.attributes.includes(attribute)) {
-      updateFilter("attributes", [...filters.attributes, attribute]);
+  const handleCategoryToggle = (category: string) => {
+    if (category === "All") {
+      // Select all categories (excluding "All" itself)
+      const allCategories = categoryOptions.filter(cat => cat !== "All");
+      const newCategories = selectedCategories.length === allCategories.length ? [] : allCategories;
+      updateFilter("selectedCategories", newCategories);
+      return;
     }
+
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+
+    updateFilter("selectedCategories", newCategories);
   };
 
-  const removeAttribute = (attribute: string) => {
-    updateFilter(
-      "attributes",
-      filters.attributes.filter((a) => a !== attribute),
-    );
+  const handleSubcategoryToggle = (subcategory: string) => {
+    if (subcategory === "All") {
+      // Select all subcategories (excluding "All" itself)
+      const allSubcategories = subcategoryOptions.filter(sub => sub !== "All");
+      const newSubcategories = selectedSubcategories.length === allSubcategories.length ? [] : allSubcategories;
+      updateFilter("selectedSubcategories", newSubcategories);
+      return;
+    }
+
+    const newSubcategories = selectedSubcategories.includes(subcategory)
+      ? selectedSubcategories.filter(s => s !== subcategory)
+      : [...selectedSubcategories, subcategory];
+
+    updateFilter("selectedSubcategories", newSubcategories);
   };
 
-  const clearAllFilters = () => {
-    setFilters({
-      dateRange: "",
-      brand: "",
-      category: "",
-      subcategory: "",
-      attributes: [],
-    });
+  const handleAttributeToggle = (attribute: string) => {
+    if (attribute === "All") {
+      // Select all attributes (excluding "All" itself)
+      const allAttributes = attributeOptions.filter(attr => attr !== "All");
+      const newAttributes = selectedAttributes.length === allAttributes.length ? [] : allAttributes;
+      updateFilter("selectedAttributes", newAttributes);
+      return;
+    }
+
+    const newAttributes = selectedAttributes.includes(attribute)
+      ? selectedAttributes.filter(a => a !== attribute)
+      : [...selectedAttributes, attribute];
+
+    updateFilter("selectedAttributes", newAttributes);
   };
 
-  const applyFilters = () => {
-    console.log("Applying filters:", filters);
-    // In a real app, this would trigger a data fetch or update the dashboard
+  const handleModelSelect = (model: string) => {
+    const newModel = selectedModel === model ? "" : model;
+    updateFilter("selectedModel", newModel);
+    updateFilter("activeDropdown", null);
   };
-
-  const hasActiveFilters =
-    filters.brand ||
-    filters.category ||
-    filters.subcategory ||
-    filters.attributes.length > 0;
 
   return (
-    <div
-      className={cn(
-        "mb-6 rounded-lg border transition-all duration-200",
-        isExpanded
-          ? "bg-card shadow-sm border-border"
-          : "bg-background/60 hover:bg-card/80 border-border/40 hover:border-border hover:shadow-sm",
-      )}
-    >
-      <div className="py-4 px-4">
-        <div className="flex items-center justify-between w-full">
-          {/* Left side - Filters label and active filters */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={handleToggleExpanded}
-              className="flex items-center gap-2 p-0 h-auto hover:bg-transparent"
-            >
-              <Filter className="h-4 w-4" />
-              <span className="font-semibold">Filters</span>
-              {hasActiveFilters && (
-                <Badge variant="secondary" className="h-5 text-xs">
-                  {
-                    [
-                      filters.brand,
-                      filters.category,
-                      filters.subcategory,
-                      ...filters.attributes,
-                    ].filter(Boolean).length
-                  }
-                </Badge>
-              )}
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 transition-transform",
-                  isExpanded && "rotate-180",
-                )}
+    <div className="fixed top-[90px] left-0 right-0 bg-[#F3F4F5] border-t border-gray-200 z-50">
+      <div className="max-w-[1600px] mx-auto px-8 py-3">
+        {/* Main filter row */}
+        <div className="flex items-center gap-[11px]">
+          {/* Date Range Button */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="flex items-center justify-center border border-[#CAC4D0] rounded-xl bg-white hover:border-[#6750A4] transition-colors cursor-pointer">
+                <div className="flex items-center gap-2 px-4 py-[10px]">
+                  <CalendarIcon className="h-5 w-5 text-[#18181B]" strokeWidth={2} />
+                  <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                    {filterDateRange.from && filterDateRange.to ? (
+                      `${format(filterDateRange.from, "MMM dd, yyyy")} - ${format(filterDateRange.to, "MMM dd, yyyy")}`
+                    ) : filterDateRange.from ? (
+                      format(filterDateRange.from, "MMM dd, yyyy")
+                    ) : (
+                      "Select date range"
+                    )}
+                  </span>
+                </div>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                defaultMonth={filterDateRange.from}
+                selected={filterDateRange}
+                onSelect={(newDateRange) => updateFilter("filterDateRange", newDateRange || { from: undefined, to: undefined })}
+                numberOfMonths={2}
               />
-            </Button>
+            </PopoverContent>
+          </Popover>
 
-            {/* Active filter display when collapsed */}
-            {!isExpanded && hasActiveFilters && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {filters.brand && <span>{filters.brand}</span>}
-                {filters.category && <span>• {filters.category}</span>}
-              </div>
-            )}
-          </div>
-
-          {/* Right side - Action buttons */}
-          <div className="flex items-center gap-2">
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAllFilters}
-                className="text-muted-foreground h-8 px-3 text-sm"
-              >
-                Clear
-              </Button>
-            )}
-            <Button
-              onClick={applyFilters}
-              size="sm"
-              className="h-8 px-4 text-sm"
-            >
-              Apply
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {isExpanded && (
-        <div className="space-y-4 pt-0 px-4 pb-4">
-          {/* Compact Filter Controls */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {/* Date Range */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Date Range
-              </label>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start text-xs h-8"
-              >
-                <CalendarDays className="h-3 w-3 mr-1" />
-                {filters.dateRange || "Select"}
-              </Button>
-            </div>
-
-            {/* Brand Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Brand
-              </label>
-              <Select
-                value={filters.brand}
-                onValueChange={(value) =>
-                  updateFilter("brand", value === "All Brands" ? "" : value)
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {brandOptions.map((brand) => (
-                    <SelectItem key={brand} value={brand} className="text-xs">
-                      {brand}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Category Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
+          {/* Category Button with counter */}
+          <div 
+            className={`flex items-center justify-center border rounded-xl transition-colors cursor-pointer ${
+              selectedCategories.length > 0 
+                ? 'border-[#6750A4] bg-[#E8DEF8]' 
+                : 'border-[#CAC4D0] bg-white hover:border-[#6750A4]'
+            }`}
+            onClick={() => updateFilter("activeDropdown", activeDropdown === "category" ? null : "category")}
+          >
+            <div className="flex items-center gap-2 px-4 py-[10px]">
+              <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
                 Category
-              </label>
-              <Select
-                value={filters.category}
-                onValueChange={(value) =>
-                  updateFilter(
-                    "category",
-                    value === "All Categories" ? "" : value,
-                  )
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((category) => (
-                    <SelectItem
-                      key={category}
-                      value={category}
-                      className="text-xs"
-                    >
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Subcategory Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Subcategory
-              </label>
-              <Select
-                value={filters.subcategory}
-                onValueChange={(value) =>
-                  updateFilter(
-                    "subcategory",
-                    value === "All Subcategories" ? "" : value,
-                  )
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subcategoryOptions.map((subcategory) => (
-                    <SelectItem
-                      key={subcategory}
-                      value={subcategory}
-                      className="text-xs"
-                    >
-                      {subcategory}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Attributes Filter */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground">
-                Attributes
-              </label>
-              <Select onValueChange={addAttribute}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Add" />
-                </SelectTrigger>
-                <SelectContent>
-                  {attributeOptions
-                    .filter(
-                      (attr) =>
-                        attr === "All Attributes" ||
-                        !filters.attributes.includes(attr),
-                    )
-                    .map((attribute) => (
-                      <SelectItem
-                        key={attribute}
-                        value={attribute}
-                        className="text-xs"
-                      >
-                        {attribute}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+              </span>
+              {selectedCategories.length > 0 && (
+                <div className="flex items-center justify-center w-5 h-[18px] rounded-lg bg-[#9369F6]">
+                  <span className="text-sm font-medium text-white leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                    {selectedCategories.length}
+                  </span>
+                </div>
+              )}
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "category" ? 'rotate-180' : ''}`} />
             </div>
           </div>
 
-          {/* Selected Attributes */}
-          {filters.attributes.length > 0 && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Selected Attributes
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {filters.attributes.map((attribute) => (
-                  <Badge
-                    key={attribute}
-                    variant="secondary"
-                    className="gap-1 pr-1 text-xs h-6"
-                  >
-                    {attribute}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-3 w-3 p-0 hover:bg-transparent"
-                      onClick={() => removeAttribute(attribute)}
-                    >
-                      <X className="h-2 w-2" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
+          {/* Subcategory Button with counter */}
+          <div 
+            className={`flex items-center justify-center border rounded-xl transition-colors cursor-pointer ${
+              selectedSubcategories.length > 0 
+                ? 'border-[#6750A4] bg-[#E8DEF8]' 
+                : 'border-[#CAC4D0] bg-white hover:border-[#6750A4]'
+            }`}
+            onClick={() => updateFilter("activeDropdown", activeDropdown === "subcategory" ? null : "subcategory")}
+          >
+            <div className="flex items-center gap-2 px-4 py-[10px]">
+              <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                Subcategory
+              </span>
+              {selectedSubcategories.length > 0 && (
+                <div className="flex items-center justify-center w-5 h-[18px] rounded-lg bg-[#9369F6]">
+                  <span className="text-sm font-medium text-white leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                    {selectedSubcategories.length}
+                  </span>
+                </div>
+              )}
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "subcategory" ? 'rotate-180' : ''}`} />
             </div>
-          )}
+          </div>
+
+          {/* Attributes Button with counter */}
+          <div 
+            className={`flex items-center justify-center border rounded-xl transition-colors cursor-pointer ${
+              selectedAttributes.length > 0 
+                ? 'border-[#6750A4] bg-[#E8DEF8]' 
+                : 'border-[#CAC4D0] bg-white hover:border-[#6750A4]'
+            }`}
+            onClick={() => updateFilter("activeDropdown", activeDropdown === "attributes" ? null : "attributes")}
+          >
+            <div className="flex items-center gap-2 px-4 py-[10px]">
+              <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                Attributes
+              </span>
+              {selectedAttributes.length > 0 && (
+                <div className="flex items-center justify-center w-5 h-[18px] rounded-lg bg-[#9369F6]">
+                  <span className="text-sm font-medium text-white leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                    {selectedAttributes.length}
+                  </span>
+                </div>
+              )}
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "attributes" ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Model Button with indicator */}
+          <div 
+            className={`flex items-center justify-center border rounded-xl transition-colors cursor-pointer ${
+              selectedModel 
+                ? 'border-[#6750A4] bg-[#E8DEF8]' 
+                : 'border-[#CAC4D0] bg-white hover:border-[#6750A4]'
+            }`}
+            onClick={() => updateFilter("activeDropdown", activeDropdown === "model" ? null : "model")}
+          >
+            <div className="flex items-center gap-2 px-4 py-[10px]">
+              <span className="text-sm font-medium text-[#49454F] leading-5 tracking-[0.1px]" style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                {selectedModel || "Model"}
+              </span>
+              <ChevronDown className={`h-5 w-5 text-[#49454F] transition-transform duration-200 ${activeDropdown === "model" ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Category chips row */}
+        {activeDropdown === "category" && (
+          <div className="mt-4 flex flex-wrap gap-[5px]">
+            {categoryOptions.map((category) => {
+              const allCategoriesSelected = selectedCategories.length === categoryOptions.filter(cat => cat !== "All").length;
+              const isSelected = category === "All" ? allCategoriesSelected : selectedCategories.includes(category);
+              
+              return (
+                <div
+                  key={category}
+                  onClick={() => handleCategoryToggle(category)}
+                  className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
+                    isSelected && category !== "All"
+                      ? 'bg-[#E8DEF8] border-transparent'
+                      : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
+                  }`}
+                >
+                  <div className={`flex items-center gap-2 ${
+                    isSelected && category !== "All" ? 'px-2 pr-4' : 'px-4'
+                  } py-[6px]`}>
+                    {isSelected && category !== "All" && (
+                      <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
+                    )}
+                    <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
+                      isSelected && category !== "All" ? 'text-[#4A4459]' : 'text-[#49454F]'
+                    }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                      {category}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Subcategory chips row */}
+        {activeDropdown === "subcategory" && (
+          <div className="mt-4 flex flex-wrap gap-[5px]">
+            {subcategoryOptions.map((subcategory) => {
+              const allSubcategoriesSelected = selectedSubcategories.length === subcategoryOptions.filter(sub => sub !== "All").length;
+              const isSelected = subcategory === "All" ? allSubcategoriesSelected : selectedSubcategories.includes(subcategory);
+              
+              return (
+                <div
+                  key={subcategory}
+                  onClick={() => handleSubcategoryToggle(subcategory)}
+                  className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
+                    isSelected && subcategory !== "All"
+                      ? 'bg-[#E8DEF8] border-transparent'
+                      : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
+                  }`}
+                >
+                  <div className={`flex items-center gap-2 ${
+                    isSelected && subcategory !== "All" ? 'px-2 pr-4' : 'px-4'
+                  } py-[6px]`}>
+                    {isSelected && subcategory !== "All" && (
+                      <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
+                    )}
+                    <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
+                      isSelected && subcategory !== "All" ? 'text-[#4A4459]' : 'text-[#49454F]'
+                    }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                      {subcategory}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Attributes chips row */}
+        {activeDropdown === "attributes" && (
+          <div className="mt-4 flex flex-wrap gap-[5px]">
+            {attributeOptions.map((attribute) => {
+              const allAttributesSelected = selectedAttributes.length === attributeOptions.filter(attr => attr !== "All").length;
+              const isSelected = attribute === "All" ? allAttributesSelected : selectedAttributes.includes(attribute);
+              
+              return (
+                <div
+                  key={attribute}
+                  onClick={() => handleAttributeToggle(attribute)}
+                  className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
+                    isSelected && attribute !== "All"
+                      ? 'bg-[#E8DEF8] border-transparent'
+                      : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
+                  }`}
+                >
+                  <div className={`flex items-center gap-2 ${
+                    isSelected && attribute !== "All" ? 'px-2 pr-4' : 'px-4'
+                  } py-[6px]`}>
+                    {isSelected && attribute !== "All" && (
+                      <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
+                    )}
+                    <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
+                      isSelected && attribute !== "All" ? 'text-[#4A4459]' : 'text-[#49454F]'
+                    }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                      {attribute}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Model chips row */}
+        {activeDropdown === "model" && (
+          <div className="mt-4 flex flex-wrap gap-[5px]">
+            {modelOptions.map((model) => {
+              const isSelected = selectedModel === model;
+
+              return (
+                <div
+                  key={model}
+                  onClick={() => handleModelSelect(model)}
+                  className={`flex items-center justify-center h-8 rounded-lg border cursor-pointer transition-all ${
+                    isSelected
+                      ? 'bg-[#E8DEF8] border-transparent'
+                      : 'bg-white border-[#CAC4D0] hover:border-[#6750A4]'
+                  }`}
+                >
+                  <div className={`flex items-center gap-2 ${
+                    isSelected ? 'px-2 pr-4' : 'px-4'
+                  } py-[6px]`}>
+                    {isSelected && (
+                      <Check className="h-[18px] w-[18px] text-[#4A4459]" strokeWidth={2} />
+                    )}
+                    <span className={`text-sm font-medium leading-5 tracking-[0.1px] ${
+                      isSelected ? 'text-[#4A4459]' : 'text-[#49454F]'
+                    }`} style={{ fontFamily: 'Roboto, -apple-system, Roboto, Helvetica, sans-serif' }}>
+                      {model}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

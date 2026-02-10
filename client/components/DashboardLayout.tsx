@@ -1,21 +1,24 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
-import { FilterBar } from "./FilterBar";
-import { BrandTitle } from "./BrandTitle";
-import { TabNavigation } from "./TabNavigation";
+import { SidebarNavigation } from "./SidebarNavigation";
+import { useFilterVisibility } from "../contexts/FilterVisibilityContext";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { isFilterOpen } = useFilterVisibility();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <BrandTitle />
-      <FilterBar />
-      <TabNavigation />
-      <main className="min-h-[calc(100vh-14rem)]">{children}</main>
+      <SidebarNavigation />
+      <main className={`lg:ml-64 min-h-[calc(100vh-90px)] transition-all duration-200 ${
+        isFilterOpen ? 'pt-[75px]' : 'pt-0'
+      }`}>
+        {children}
+      </main>
     </div>
   );
 }

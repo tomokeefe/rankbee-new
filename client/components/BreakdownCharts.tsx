@@ -49,13 +49,16 @@ function HorizontalBar({ data, title }: HorizontalBarProps) {
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {data.map((item, index) => (
             <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-foreground">{item.name}</span>
-                <div className="flex items-center gap-4">
-                  <span className="text-muted-foreground">
+              {/* Top row with name and metrics */}
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground text-sm truncate pr-4">
+                  {item.name}
+                </span>
+                <div className="flex items-center gap-4 text-xs shrink-0">
+                  <span className="text-muted-foreground whitespace-nowrap">
                     Avg Rank: {item.avgRank}
                   </span>
                   <div
@@ -69,20 +72,24 @@ function HorizontalBar({ data, title }: HorizontalBarProps) {
                     ) : (
                       <ArrowDown className="h-3 w-3" />
                     )}
-                    <span className="text-xs">{Math.abs(item.change)}%</span>
+                    <span>{Math.abs(item.change)}%</span>
                   </div>
                 </div>
               </div>
-              <div className="relative">
+
+              {/* Progress bar with percentage on separate line */}
+              <div className="space-y-1">
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-primary h-2 rounded-full transition-all duration-500"
                     style={{ width: `${item.coverage}%` }}
                   />
                 </div>
-                <span className="absolute right-0 -top-5 text-xs text-muted-foreground">
-                  {item.coverage}%
-                </span>
+                <div className="flex justify-end">
+                  <span className="text-xs text-muted-foreground">
+                    {item.coverage}%
+                  </span>
+                </div>
               </div>
             </div>
           ))}

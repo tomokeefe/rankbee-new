@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "../components/DashboardLayout";
 import { useFilters } from "../contexts/FilterContext";
-import { getFilteredData } from "../services/dataService";
+import { getBrandCitationData, getBrandCitationTrends, generateCitationInsights, getBrandDisplayName } from "../services/citationService";
+import { useToast } from "../hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -32,6 +33,9 @@ import {
   ArrowUp,
   ArrowDown,
   Calendar,
+  Brain,
+  Sparkles,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   Select,
@@ -40,6 +44,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import { format } from "date-fns";
 import {
   LineChart,
@@ -58,124 +75,6 @@ import {
   Cell,
 } from "recharts";
 
-// Extended citation data with more comprehensive information
-const citationData = [
-  {
-    id: "1",
-    domain: "tripadvisor.com",
-    url: "https://tripadvisor.com/restaurant/olive-garden-reviews",
-    title: "Olive Garden Italian Restaurant Reviews",
-    citations: 1247,
-    coverage: 23.4,
-    change: 1.8,
-    sentiment: "positive",
-    authority: 92,
-    traffic: 45600,
-    lastCrawled: new Date("2025-01-08T10:30:00"),
-    category: "Review Site",
-    status: "active",
-  },
-  {
-    id: "2",
-    domain: "yelp.com",
-    url: "https://yelp.com/biz/olive-garden-location",
-    title: "Olive Garden - Local Business Listing",
-    citations: 892,
-    coverage: 18.9,
-    change: -0.7,
-    sentiment: "neutral",
-    authority: 88,
-    traffic: 32100,
-    lastCrawled: new Date("2025-01-08T09:45:00"),
-    category: "Directory",
-    status: "active",
-  },
-  {
-    id: "3",
-    domain: "opentable.com",
-    url: "https://opentable.com/olive-garden-reservations",
-    title: "Make Reservations at Olive Garden",
-    citations: 634,
-    coverage: 12.3,
-    change: 0.3,
-    sentiment: "positive",
-    authority: 85,
-    traffic: 18900,
-    lastCrawled: new Date("2025-01-08T08:20:00"),
-    category: "Booking Platform",
-    status: "active",
-  },
-  {
-    id: "4",
-    domain: "zomato.com",
-    url: "https://zomato.com/olive-garden-menu-reviews",
-    title: "Olive Garden Menu, Reviews & Ratings",
-    citations: 421,
-    coverage: 8.1,
-    change: 2.2,
-    sentiment: "positive",
-    authority: 78,
-    traffic: 12500,
-    lastCrawled: new Date("2025-01-08T07:15:00"),
-    category: "Food Portal",
-    status: "active",
-  },
-  {
-    id: "5",
-    domain: "google.com",
-    url: "https://google.com/maps/place/olive-garden",
-    title: "Olive Garden Locations on Google Maps",
-    citations: 856,
-    coverage: 16.2,
-    change: 3.1,
-    sentiment: "neutral",
-    authority: 100,
-    traffic: 67800,
-    lastCrawled: new Date("2025-01-08T06:30:00"),
-    category: "Maps & Local",
-    status: "active",
-  },
-  {
-    id: "6",
-    domain: "foursquare.com",
-    url: "https://foursquare.com/venue/olive-garden",
-    title: "Olive Garden Venue Information",
-    citations: 234,
-    coverage: 4.7,
-    change: -1.2,
-    sentiment: "neutral",
-    authority: 72,
-    traffic: 8900,
-    lastCrawled: new Date("2025-01-08T05:45:00"),
-    category: "Social Platform",
-    status: "declining",
-  },
-  {
-    id: "7",
-    domain: "urbanspoon.com",
-    url: "https://urbanspoon.com/r/olive-garden",
-    title: "Olive Garden Restaurant Info",
-    citations: 145,
-    coverage: 2.9,
-    change: -3.4,
-    sentiment: "negative",
-    authority: 45,
-    traffic: 3200,
-    lastCrawled: new Date("2025-01-08T04:30:00"),
-    category: "Review Site",
-    status: "inactive",
-  },
-];
-
-const trendData = [
-  { month: "Jul", citations: 3890, coverage: 19.2, domains: 145 },
-  { month: "Aug", citations: 4120, coverage: 20.1, domains: 152 },
-  { month: "Sep", citations: 4380, coverage: 21.5, domains: 158 },
-  { month: "Oct", citations: 4650, coverage: 22.8, domains: 163 },
-  { month: "Nov", citations: 4890, coverage: 23.9, domains: 167 },
-  { month: "Dec", citations: 5140, coverage: 24.7, domains: 171 },
-];
-
 const categoryDistribution = [
   { name: "Review Sites", value: 35, color: "#8b5cf6" },
   { name: "Directories", value: 28, color: "#06b6d4" },
@@ -185,12 +84,51 @@ const categoryDistribution = [
 ];
 
 export default function CitationAnalysis() {
-  const { filters } = useFilters();
+  const { filters, brands } = useFilters();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [sortField, setSortField] = useState("citations");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [aiInsights, setAiInsights] = useState<any[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
+  const [showAllData, setShowAllData] = useState(false);
+  const [selectedCitation, setSelectedCitation] = useState<any>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  // Get brand-specific citation data
+  const citationData = getBrandCitationData(filters.brand);
+  const trendData = getBrandCitationTrends(filters.brand);
+  const brandName = getBrandDisplayName(filters.brand);
+
+  useEffect(() => {
+    loadAIInsights();
+  }, [filters.brand]);
+
+  const loadAIInsights = async () => {
+    setIsLoadingInsights(true);
+    setIsUsingFallback(false);
+    try {
+      const insights = await generateCitationInsights(filters.brand);
+      setAiInsights(insights);
+    } catch (error) {
+      console.error("Error loading AI insights:", error);
+      setIsUsingFallback(true);
+
+      // Show user-friendly notification for quota errors
+      if (error instanceof Error && error.message.includes('429')) {
+        toast({
+          title: "AI Analysis Unavailable",
+          description: "Using sample insights due to API quota limits. Data shown is for demonstration purposes.",
+          variant: "default",
+        });
+      }
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
 
   const filteredData = citationData.filter((item) => {
     if (
@@ -206,7 +144,28 @@ export default function CitationAnalysis() {
     return true;
   });
 
-  const sortedData = [...filteredData].sort((a, b) => {
+  const handleViewCitation = (citation: any) => {
+    setSelectedCitation(citation);
+    setIsViewModalOpen(true);
+  };
+
+  const handleOpenExternalLink = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShowAll = () => {
+    setShowAllData(true);
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedStatus("all");
+    toast({
+      title: "Showing All Data",
+      description: "All filters have been cleared to show complete citation data.",
+    });
+  };
+
+  const dataToDisplay = showAllData ? citationData : filteredData;
+  const sortedData = [...dataToDisplay].sort((a, b) => {
     const aValue = a[sortField as keyof typeof a];
     const bValue = b[sortField as keyof typeof b];
     const multiplier = sortDirection === "asc" ? 1 : -1;
@@ -270,7 +229,20 @@ export default function CitationAnalysis() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1240px] mx-auto px-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#9369F6]">Citation Analysis</h1>
+            <p className="text-gray-600">Analyzing citations for {brandName}</p>
+          </div>
+          <Button onClick={loadAIInsights} disabled={isLoadingInsights} className="bg-[#9369F6] hover:bg-[#7C3AED]">
+            <Brain className="h-4 w-4 mr-2" />
+            {isLoadingInsights ? "Generating..." : "Refresh Insights"}
+          </Button>
+        </div>
+
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
@@ -342,10 +314,83 @@ export default function CitationAnalysis() {
           </Card>
         </div>
 
+        {/* AI Insights Panel */}
+        {aiInsights.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Insights for {brandName}</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={loadAIInsights}
+                  disabled={isLoadingInsights}
+                  className="text-xs h-7 px-2"
+                >
+                  <Brain className={`h-3 w-3 mr-1 ${isLoadingInsights ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500">
+                {isUsingFallback
+                  ? "Sample insights shown (AI analysis quota exceeded)"
+                  : "AI-powered insights from your citation performance data"
+                }
+              </p>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {isLoadingInsights ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="p-3 rounded-lg border animate-pulse">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                        <div className="h-3 bg-gray-200 rounded w-20"></div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {aiInsights.slice(0, 4).map((insight, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-lg border transition-all duration-200 hover:shadow-sm bg-gray-50 border-gray-200"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-bold text-gray-700">
+                          {insight.title}
+                        </h4>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          insight.significance === 'high' ? 'bg-red-100 text-red-800' :
+                          insight.significance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {insight.significance} priority
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-800 leading-relaxed mb-2">
+                        {insight.description}
+                      </p>
+                      <div className="flex justify-end">
+                        <span className="text-xs text-gray-500">
+                          {Math.round(insight.confidence * 100)}% confidence
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Citation Trends Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Citation Growth Trends</CardTitle>
+            <CardTitle>Citation Growth Trends for {brandName}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -438,7 +483,7 @@ export default function CitationAnalysis() {
           {/* Top Performing Domains */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Top Performing Domains</CardTitle>
+              <CardTitle>Top Performing Domains for {brandName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -542,7 +587,12 @@ export default function CitationAnalysis() {
         <Card>
           <CardHeader>
             <CardTitle>
-              Citation Details ({sortedData.length} results)
+              {brandName} Citation Details ({sortedData.length} results)
+            {showAllData && (
+              <Badge variant="outline" className="ml-2">
+                Showing All Data
+              </Badge>
+            )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -630,9 +680,49 @@ export default function CitationAnalysis() {
                         {format(citation.lastCrawled, "MMM d, HH:mm")}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewCitation(citation)}
+                            title="View Citation Details"
+                            className="flex items-center gap-1 text-xs"
+                          >
+                            <Eye className="h-3 w-3" />
+                            View
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" title="More Actions">
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleViewCitation(citation)}>
+                                <Eye className="h-3 w-3 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleOpenExternalLink(citation.url)}>
+                                <ExternalLink className="h-3 w-3 mr-2" />
+                                Open External Link
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={handleShowAll}>
+                                <Eye className="h-3 w-3 mr-2" />
+                                Show All
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                navigator.clipboard.writeText(citation.url);
+                                toast({
+                                  title: "URL Copied",
+                                  description: "Citation URL has been copied to clipboard.",
+                                });
+                              }}>
+                                <Link className="h-3 w-3 mr-2" />
+                                Copy URL
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -641,6 +731,155 @@ export default function CitationAnalysis() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Citation Details Modal */}
+        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-[#9369F6]" />
+                Citation Details: {selectedCitation?.domain}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedCitation && (
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Basic Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Domain</label>
+                        <p className="text-base font-semibold">{selectedCitation.domain}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Category</label>
+                        <Badge variant="outline">{selectedCitation.category}</Badge>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Status</label>
+                        <Badge className={getStatusColor(selectedCitation.status)}>
+                          {selectedCitation.status}
+                        </Badge>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Authority Score</label>
+                        <p className="text-base font-semibold">{selectedCitation.authority}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Title</label>
+                      <p className="text-base">{selectedCitation.title}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">URL</label>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-blue-600 break-all">{selectedCitation.url}</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenExternalLink(selectedCitation.url)}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Performance Metrics */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Performance Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.citations}</div>
+                        <div className="text-sm text-gray-600">Citations</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.coverage}%</div>
+                        <div className="text-sm text-gray-600">Coverage</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className={`text-2xl font-bold flex items-center justify-center ${
+                          selectedCitation.change > 0 ? 'text-green-600' :
+                          selectedCitation.change < 0 ? 'text-red-600' : 'text-gray-600'
+                        }`}>
+                          {selectedCitation.change > 0 ? (
+                            <ArrowUp className="h-4 w-4 mr-1" />
+                          ) : selectedCitation.change < 0 ? (
+                            <ArrowDown className="h-4 w-4 mr-1" />
+                          ) : null}
+                          {Math.abs(selectedCitation.change)}%
+                        </div>
+                        <div className="text-sm text-gray-600">Change</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-[#9369F6]">{selectedCitation.traffic.toLocaleString()}</div>
+                        <div className="text-sm text-gray-600">Traffic</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Additional Details */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Additional Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Last Crawled</label>
+                        <p className="text-base">{format(selectedCitation.lastCrawled, "MMM d, yyyy 'at' HH:mm")}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Sentiment</label>
+                        <Badge className={getSentimentColor(selectedCitation.sentiment)}>
+                          {selectedCitation.sentiment}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    onClick={() => handleOpenExternalLink(selectedCitation.url)}
+                    className="bg-[#9369F6] hover:bg-[#7C3AED]"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Citation
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedCitation.url);
+                      toast({
+                        title: "URL Copied",
+                        description: "Citation URL has been copied to clipboard.",
+                      });
+                    }}
+                  >
+                    <Link className="h-4 w-4 mr-2" />
+                    Copy URL
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsViewModalOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
